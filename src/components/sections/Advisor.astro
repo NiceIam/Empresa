@@ -1,0 +1,241 @@
+---
+/**
+ * Asesor en línea: 3 preguntas → recomendación de películas + mensaje de WhatsApp prellenado.
+ */
+import { getImage } from 'astro:assets';
+import Icon, { type IconName } from '@/components/ui/Icon.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import { products, productUrl } from '@/data/catalog';
+import { site } from '@/config/site';
+
+const productData = Object.fromEntries(
+  await Promise.all(
+    products.map(async (p) => {
+      const img = await getImage({ src: p.image, width: 480, height: 320, fit: 'cover', format: 'webp', quality: 70 });
+      return [p.slug, { name: p.name, url: productUrl(p), summary: p.summary, img: img.src }] as const;
+    }),
+  ),
+);
+
+const steps: { key: string; title: string; options: { value: string; label: string; icon: IconName }[] }[] = [
+  {
+    key: 'space',
+    title: '¿Dónde está el vidrio?',
+    options: [
+      { value: 'hogar', label: 'Casa o apartamento', icon: 'house' },
+      { value: 'oficina', label: 'Oficina o empresa', icon: 'building' },
+      { value: 'comercio', label: 'Local o vitrina', icon: 'store' },
+      { value: 'fachada', label: 'Fachada o edificio', icon: 'layers' },
+    ],
+  },
+  {
+    key: 'need',
+    title: '¿Qué quieres resolver?',
+    options: [
+      { value: 'calor', label: 'Calor y sol', icon: 'thermometer-sun' },
+      { value: 'privacidad', label: 'Privacidad', icon: 'eye-off' },
+      { value: 'seguridad', label: 'Seguridad', icon: 'shield-check' },
+      { value: 'decorar', label: 'Decorar o marca', icon: 'palette' },
+    ],
+  },
+  {
+    key: 'priority',
+    title: '¿Qué es lo más importante para ti?',
+    options: [
+      { value: 'luz', label: 'Conservar luz y vista', icon: 'sun-medium' },
+      { value: 'max', label: 'Máximo desempeño', icon: 'award' },
+      { value: 'costo', label: 'Mejor costo-beneficio', icon: 'badge-check' },
+    ],
+  },
+];
+---
+
+<section class="py-24 lg:py-32" id="asesor">
+  <div class="container-page">
+    <div class="grid gap-12 lg:grid-cols-[0.9fr_1.1fr] lg:gap-20">
+      <SectionHeading
+        eyebrow="Asesor en línea"
+        title={'¿Qué película necesitas? <span class="text-petroleo-500">Descúbrelo en 20 segundos.</span>'}
+        lead="Responde tres preguntas y te recomendamos la película ideal. Luego, un asesor confirma la elección con muestras en tu espacio."
+      >
+        <ul class="mt-8 space-y-3 text-grafito/80">
+          <li class="flex items-center gap-3"><Icon name="check" class="size-5 text-petroleo-500" /> Sin registro ni datos personales</li>
+          <li class="flex items-center gap-3"><Icon name="check" class="size-5 text-petroleo-500" /> Recomendación basada en tu espacio</li>
+          <li class="flex items-center gap-3"><Icon name="check" class="size-5 text-petroleo-500" /> Envía el resultado por WhatsApp con un clic</li>
+        </ul>
+      </SectionHeading>
+
+      <div class="advisor card relative overflow-hidden p-6 sm:p-10" data-reveal>
+        <div class="mb-8 flex items-center gap-2" aria-hidden="true">
+          {steps.map((_, i) => <span class="progress h-1.5 flex-1 rounded-full bg-petroleo-900/10 transition-colors duration-500" data-step-bar={i} />)}
+        </div>
+
+        <form class="advisor-form" novalidate>
+          {
+            steps.map((s, i) => (
+              <fieldset class="step" data-step={i} hidden={i !== 0}>
+                <legend class="font-display text-2xl font-semibold text-petroleo-900">
+                  <span class="mb-2 block text-sm font-medium text-grafito/50">Paso {i + 1} de {steps.length}</span>
+                  {s.title}
+                </legend>
+                <div class:list={['mt-6 grid gap-3', s.options.length === 3 ? 'sm:grid-cols-3' : 'sm:grid-cols-2']}>
+                  {s.options.map((o) => (
+                    <label class="option group relative flex cursor-pointer items-center gap-4 rounded-2xl border border-petroleo-900/12 p-4 transition hover:border-petroleo-900/40 has-checked:border-petroleo-900 has-checked:bg-petroleo-900 has-checked:text-white has-focus-visible:ring-2 has-focus-visible:ring-ambar-400">
+                      <input type="radio" name={s.key} value={o.value} class="sr-only" />
+                      <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-concreto text-petroleo-900 transition group-has-checked:bg-ambar-400">
+                        <Icon name={o.icon} class="size-5" />
+                      </span>
+                      <span class="font-medium">{o.label}</span>
+                    </label>
+                  ))}
+                </div>
+                {i > 0 && (
+                  <button type="button" class="back mt-6 inline-flex items-center gap-2 text-sm font-medium text-grafito/60 transition hover:text-petroleo-900">
+                    <Icon name="arrow-left" class="size-4" /> Atrás
+                  </button>
+                )}
+              </fieldset>
+            ))
+          }
+        </form>
+
+        <div class="result" hidden aria-live="polite">
+          <p class="eyebrow">Tu recomendación</p>
+          <p class="mt-3 font-display text-2xl font-semibold text-petroleo-900 outline-none" data-headline tabindex="-1"></p>
+          <p class="mt-2 leading-relaxed text-grafito/75" data-reason></p>
+          <ul class="mt-6 grid gap-3" data-list></ul>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <a href="#" target="_blank" rel="noopener" class="btn btn-primary" data-wa><Icon name="whatsapp" class="size-4" /> Enviar a un asesor</a>
+            <button type="button" class="restart btn btn-outline"><Icon name="rotate-ccw" class="size-4" /> Empezar de nuevo</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<script type="application/json" id="advisor-data" set:html={JSON.stringify({ products: productData, whatsapp: site.contact.whatsapp })} />
+
+<script>
+  type P = { name: string; url: string; summary: string; img: string };
+  const data = JSON.parse(document.getElementById('advisor-data')!.textContent!) as { products: Record<string, P>; whatsapp: string };
+
+  type Answers = { space?: string; need?: string; priority?: string };
+  const labels: Record<string, string> = {
+    hogar: 'casa o apartamento', oficina: 'oficina', comercio: 'local comercial', fachada: 'fachada',
+    calor: 'reducir el calor', privacidad: 'ganar privacidad', seguridad: 'mejorar la seguridad', decorar: 'decorar o aplicar marca',
+    luz: 'conservar la luz', max: 'máximo desempeño', costo: 'mejor costo-beneficio',
+  };
+
+  function recommend(a: Answers): { slugs: string[]; reason: string } {
+    const { space, need, priority } = a;
+    if (need === 'calor') {
+      if (priority === 'luz') return { slugs: ['nanoceramica-mkr70', 'polarizado-nanoceramico'], reason: 'La nanocerámica filtra el infrarrojo (el calor) sin oscurecer. MKR70 es casi invisible.' };
+      if (priority === 'max') return space === 'hogar'
+        ? { slugs: ['polarizado-nanoceramico', 'seguridad-tono-nanoceramico-4-mil'], reason: 'La nanocerámica ofrece el mayor rechazo de calor sin efecto espejo, ideal para vivienda.' }
+        : { slugs: ['pelicula-reflectiva-espejo', 'polarizado-nanoceramico'], reason: 'La reflectiva tiene el mayor rechazo solar y da privacidad diurna; la nanocerámica, si prefieres sin espejo.' };
+      return { slugs: ['polarizado-convencional', 'polarizado-nanoceramico'], reason: 'El polarizado convencional reduce brillo y UV con gran costo-beneficio; si el calor es intenso, la nanocerámica rinde mucho más.' };
+    }
+    if (need === 'privacidad') {
+      if (priority === 'luz') return { slugs: ['frosted-esmerilado', 'venetian-persiana'], reason: 'El esmerilado y la venetian ocultan la vista pero dejan pasar la luz.' };
+      if (priority === 'max') return space === 'comercio' || space === 'fachada'
+        ? { slugs: ['pelicula-reflectiva-espejo', 'microperforada'], reason: 'El efecto espejo da privacidad total de día; la microperforada convierte el vidrio en publicidad.' }
+        : { slugs: ['blanca-mate-opalizada', 'polarizado-convencional'], reason: 'La opalizada da privacidad total con luz difusa; el polarizado 5 % o 20 % es la opción sin opacar.' };
+      return { slugs: ['polarizado-convencional', 'frosted-esmerilado'], reason: 'Un polarizado de 20 % o 35 % da privacidad diurna con excelente costo-beneficio.' };
+    }
+    if (need === 'seguridad') {
+      if (priority === 'max' || space === 'comercio') return { slugs: ['seguridad-transparente-8-mil', 'seguridad-tono-nanoceramico-4-mil'], reason: 'La de 8 mil duplica el espesor y retrasa intrusiones. Recomendada para vitrinas y primeros pisos.' };
+      if (priority === 'luz') return { slugs: ['seguridad-transparente-4-mil', 'seguridad-transparente-8-mil'], reason: 'La película de seguridad transparente protege sin cambiar la apariencia del vidrio.' };
+      return { slugs: ['seguridad-transparente-4-mil', 'seguridad-tono-convencional-4-mil'], reason: 'La de 4 mil previene accidentes; con tono suma privacidad en una sola instalación.' };
+    }
+    // decorar
+    if (space === 'comercio') return { slugs: ['microperforada', 'vinilo-decorativo-color', 'frosted-esmerilado'], reason: 'Microperforado y vinilo convierten tu vitrina en un espacio de marca sin oscurecer el local.' };
+    if (priority === 'max') return { slugs: ['frosted-esmerilado', 'blanca-mate-opalizada'], reason: 'El esmerilado tipo sandblasting con diseño a la medida es la opción más elegante.' };
+    return { slugs: ['frosted-esmerilado', 'vinilo-decorativo-color', 'venetian-persiana'], reason: 'Esmerilado, vinilo y venetian combinan diseño, privacidad y marca.' };
+  }
+
+  const root = document.getElementById('asesor')!;
+  const form = root.querySelector<HTMLFormElement>('.advisor-form')!;
+  const steps = [...root.querySelectorAll<HTMLFieldSetElement>('.step')];
+  const bars = [...root.querySelectorAll<HTMLElement>('[data-step-bar]')];
+  const result = root.querySelector<HTMLElement>('.result')!;
+  const answers: Answers = {};
+
+  const show = (i: number) => {
+    steps.forEach((s, j) => (s.hidden = j !== i));
+    bars.forEach((b, j) => {
+      b.classList.toggle('bg-ambar-400', j <= i);
+      b.classList.toggle('bg-petroleo-900/10', j > i);
+    });
+    steps[i]?.querySelector<HTMLInputElement>('input')?.focus({ preventScroll: true });
+  };
+  bars[0].classList.replace('bg-petroleo-900/10', 'bg-ambar-400');
+
+  const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+
+  const finish = () => {
+    const { slugs, reason } = recommend(answers);
+    form.hidden = true;
+    result.hidden = false;
+    bars.forEach((b) => b.classList.replace('bg-petroleo-900/10', 'bg-ambar-400'));
+    result.querySelector('[data-headline]')!.textContent = `Para tu ${labels[answers.space!]}, te recomendamos:`;
+    result.querySelector('[data-reason]')!.textContent = reason;
+    result.querySelector('[data-list]')!.innerHTML = slugs
+      .map((s) => data.products[s])
+      .filter(Boolean)
+      .map(
+        (p, i) => `<li><a href="${esc(p.url)}" class="group flex items-center gap-4 rounded-2xl border border-petroleo-900/10 p-3 transition hover:border-petroleo-900/40 hover:bg-concreto/40">
+          <img src="${esc(p.img)}" alt="" width="96" height="64" class="h-16 w-24 shrink-0 rounded-xl object-cover" loading="lazy" />
+          <span class="min-w-0 flex-1"><span class="flex items-center gap-2 font-display font-semibold text-petroleo-900">${esc(p.name)}${i === 0 ? '<span class="rounded-full bg-ambar-400 px-2 py-0.5 text-[0.65rem] font-semibold text-petroleo-950">Mejor opción</span>' : ''}</span>
+          <span class="mt-0.5 block text-sm text-grafito/65">${esc(p.summary)}</span></span></a></li>`,
+      )
+      .join('');
+    const names = slugs.map((s) => data.products[s]?.name).filter(Boolean).join(', ');
+    const msg = `Hola Maven Films. Usé el asesor en línea: tengo un vidrio en ${labels[answers.space!]}, quiero ${labels[answers.need!]} y priorizo ${labels[answers.priority!]}. Me recomendó: ${names}. ¿Me ayudan a cotizar?`;
+    result.querySelector<HTMLAnchorElement>('[data-wa]')!.href = `https://wa.me/${data.whatsapp}?text=${encodeURIComponent(msg)}`;
+    result.querySelector<HTMLElement>('[data-headline]')!.focus();
+  };
+
+  // Patrón accesible de radios: con flechas solo se selecciona; clic, Espacio o Enter avanzan.
+  // Se usa `click` (no `change`) para que volver a elegir una opción ya marcada también avance.
+  let arrowNav = false;
+  const isRadio = (el: EventTarget | null): el is HTMLInputElement => el instanceof HTMLInputElement && el.type === 'radio';
+  const advance = (input: HTMLInputElement) => {
+    (answers as Record<string, string>)[input.name] = input.value;
+    const i = steps.findIndex((s) => s.contains(input));
+    setTimeout(() => (i < steps.length - 1 ? show(i + 1) : finish()), 220);
+  };
+  form.addEventListener('pointerdown', () => (arrowNav = false));
+  form.addEventListener('keydown', (e) => {
+    if (!isRadio(e.target)) return;
+    if (e.key.startsWith('Arrow')) arrowNav = true;
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      e.target.checked = true;
+      advance(e.target);
+    }
+  });
+  form.addEventListener('click', (e) => {
+    if (!isRadio(e.target)) return;
+    if (arrowNav) {
+      // Selección con flechas: guarda la respuesta sin avanzar.
+      arrowNav = false;
+      (answers as Record<string, string>)[e.target.name] = e.target.value;
+      return;
+    }
+    advance(e.target);
+  });
+  root.querySelectorAll('.back').forEach((b) =>
+    b.addEventListener('click', () => {
+      const i = steps.findIndex((s) => !s.hidden);
+      show(Math.max(0, i - 1));
+    }),
+  );
+  root.querySelector('.restart')!.addEventListener('click', () => {
+    form.reset();
+    Object.keys(answers).forEach((k) => delete (answers as Record<string, string>)[k]);
+    result.hidden = true;
+    form.hidden = false;
+    show(0);
+  });
+</script>

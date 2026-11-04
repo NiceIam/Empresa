@@ -1,0 +1,90 @@
+---
+import { Picture } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import Icon from '@/components/ui/Icon.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import GlassMotif from '@/components/ui/GlassMotif.astro';
+import ProcessSteps from '@/components/sections/ProcessSteps.astro';
+import CtaBand from '@/components/sections/CtaBand.astro';
+import { site } from '@/config/site';
+import bogota from '@/assets/images/bogota-aerea-wide.jpg';
+import oficina from '@/assets/images/oficina-particiones.jpg';
+
+const values = [
+  { icon: 'lightbulb', title: 'Diagnóstico antes que venta', text: 'Primero entendemos qué pasa con tu vidrio. Si una película no es la solución, te lo decimos.' },
+  { icon: 'gem', title: 'Material profesional', text: 'Solo películas arquitectónicas de grado profesional, con ficha técnica y garantía del fabricante.' },
+  { icon: 'sparkles', title: 'Instalación impecable', text: 'Bordes precisos, sin burbujas ni contaminación. Protegemos tu espacio y lo dejamos limpio.' },
+  { icon: 'message-circle', title: 'Comunicación clara', text: 'Cotizaciones detalladas, tiempos reales y un asesor disponible por WhatsApp.' },
+] as const;
+const breadcrumbs = [
+  { name: 'Inicio', href: '/' },
+  { name: 'Nosotros', href: '/nosotros/' },
+];
+---
+
+<BaseLayout
+  title="Sobre Maven Films: especialistas en películas para vidrio"
+  description={`${site.legalName} es una empresa colombiana especializada en películas para vidrio: control solar, seguridad, decorativas y sandblasting. Conoce cómo trabajamos.`}
+  image={bogota}
+  imageAlt="Vista aérea de Bogotá con los cerros orientales"
+  breadcrumbs={breadcrumbs}
+>
+  <PageHero
+    eyebrow="Nosotros"
+    title={'Hacemos que el vidrio <span class="text-ambar-300">trabaje para ti</span>'}
+    lead={`${site.legalName} nace en ${site.address.locality} con una idea simple: el vidrio puede hacer mucho más que dejar pasar la luz. Puede proteger, enfriar, dar privacidad y contar la historia de tu marca.`}
+    image={bogota}
+    imageAlt="Vista aérea de Bogotá con los cerros orientales"
+    breadcrumbs={breadcrumbs}
+    size="lg"
+  />
+
+  <section class="py-24 lg:py-32">
+    <div class="container-page grid items-center gap-16 lg:grid-cols-2">
+      <div>
+        <SectionHeading eyebrow="Nuestra historia" title={'Un panel de vidrio y una lámina de película. <span class="text-petroleo-500">Donde se cruzan, el vidrio queda protegido.</span>'} />
+        <div class="prose-maven mt-8" data-reveal>
+          <p>Así nació nuestro símbolo, y así entendemos nuestro trabajo. Vimos hogares que se calentaban cada tarde, oficinas con pantallas imposibles de leer, vitrinas vulnerables y espacios sin identidad. Todos tenían algo en común: un vidrio que podía hacer más.</p>
+          <p>En Maven Films combinamos asesoría técnica, películas arquitectónicas de grado profesional e instaladores con experiencia para entregar resultados que se notan desde el primer día, sin obras y sin complicaciones.</p>
+          <p>Atendemos hogares, empresas, comercios y propiedad horizontal en {site.address.locality} y municipios de la Sabana.</p>
+        </div>
+      </div>
+      <div class="relative" data-reveal>
+        <div class="aspect-[4/3] overflow-hidden rounded-[2rem]">
+          <Picture src={oficina} alt="Oficina con divisiones de vidrio intervenidas con películas" formats={['avif', 'webp']} widths={[480, 800, 1100]} sizes="(min-width: 1024px) 560px, 100vw" class="h-full w-full object-cover" />
+        </div>
+        <GlassMotif class="absolute -bottom-12 -left-8 size-40" tone="light" />
+      </div>
+    </div>
+  </section>
+
+  <section class="bg-petroleo-950 py-24 text-white lg:py-32">
+    <div class="container-page">
+      <SectionHeading eyebrow="Lo que nos define" title="Cuatro principios en cada proyecto" tone="dark" />
+      <div class="mt-14 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+        {
+          values.map((v, i) => (
+            <div class="rounded-3xl glass p-7" data-reveal style={`--reveal-delay:${i * 80}`}>
+              <span class="grid size-12 place-items-center rounded-2xl bg-ambar-400 text-petroleo-950"><Icon name={v.icon} class="size-6" /></span>
+              <h3 class="mt-6 text-xl font-semibold !text-white">{v.title}</h3>
+              <p class="mt-2 leading-relaxed text-white/70">{v.text}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="py-24">
+    <div class="container-page grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+      <SectionHeading eyebrow="Cobertura" title="Dónde instalamos" lead="Visitas técnicas e instalación en Bogotá y la Sabana. Para proyectos en otras ciudades, escríbenos y lo evaluamos." />
+      <ul class="flex flex-wrap gap-2" data-reveal>
+        {site.serviceAreas.map((c) => <li class="inline-flex items-center gap-2 rounded-full border border-petroleo-900/12 bg-white px-4 py-2 font-medium text-petroleo-900"><Icon name="map-pin" class="size-4 text-petroleo-500" />{c}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <ProcessSteps />
+  <CtaBand />
+</BaseLayout>

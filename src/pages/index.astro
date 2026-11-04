@@ -1,0 +1,335 @@
+---
+import { Picture } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/ui/Icon.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import FaqList from '@/components/ui/FaqList.astro';
+import GlassMotif from '@/components/ui/GlassMotif.astro';
+import ToneSimulator from '@/components/sections/ToneSimulator.astro';
+import Advisor from '@/components/sections/Advisor.astro';
+import ProcessSteps from '@/components/sections/ProcessSteps.astro';
+import CtaBand from '@/components/sections/CtaBand.astro';
+import { site, whatsappUrl } from '@/config/site';
+import { categories, categoryUrl, productsIn } from '@/data/catalog';
+import { solutions, generalFaqs, stats } from '@/data/solutions';
+import { faqSchema, itemListSchema } from '@/lib/schema';
+import fachadaAzul from '@/assets/images/fachada-azul.jpg';
+import salaVentanales from '@/assets/images/sala-ventanales.jpg';
+
+const guides = (await getCollection('guias')).sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf()).slice(0, 3);
+const faqs = generalFaqs.slice(0, 6);
+
+const marquee = ['Control solar', 'Nanocerámica', 'Seguridad 4 y 8 mil', 'Esmerilado frosted', 'Sandblasting', 'Vinilo decorativo', 'Microperforado', 'Reflectiva espejo', 'Venetian', 'Opalizado'];
+
+const benefits = [
+  { icon: 'ruler', title: 'Visita técnica sin costo', text: 'Medimos, revisamos tu tipo de vidrio y llevamos muestras reales para que decidas viendo el resultado.' },
+  { icon: 'badge-check', title: 'Garantía escrita', text: 'Material y mano de obra respaldados por escrito. Sabes exactamente qué cubre y por cuánto tiempo.' },
+  { icon: 'wrench', title: 'Instaladores expertos', text: 'Instalación limpia, sin burbujas ni bordes levantados. Protegemos tu espacio y dejamos todo impecable.' },
+  { icon: 'clock-3', title: 'Respuesta en 1 día hábil', text: 'Te asesoramos por WhatsApp desde el primer mensaje y agendamos rápido. Instalamos fuera de horario si lo necesitas.' },
+] as const;
+---
+
+<BaseLayout
+  title="Películas para vidrio en Bogotá: control solar y seguridad"
+  description={site.description}
+  schema={[
+    faqSchema(faqs),
+    itemListSchema('Líneas de películas para vidrio', categories.map((c) => ({ name: c.name, url: categoryUrl(c.slug) }))),
+  ]}
+>
+  <!-- ═══ HERO ═══ -->
+  <section class="relative isolate overflow-hidden bg-petroleo-950 pt-28 pb-20 text-white lg:min-h-[min(100dvh,60rem)] lg:pt-36 lg:pb-28">
+    <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_80%_60%_at_70%_20%,rgb(47_99_118_/_0.45),transparent_70%)]"></div>
+    <div class="absolute inset-0 -z-10 bg-grain opacity-[0.05]"></div>
+    <div class="absolute -bottom-40 -left-40 -z-10 size-[36rem] rounded-full bg-ambar-400/10 blur-3xl"></div>
+
+    <div class="container-page grid items-center gap-14 lg:grid-cols-[1.08fr_0.92fr] lg:gap-10">
+      <div class="hero-copy">
+        <p class="eyebrow eyebrow-light">Películas arquitectónicas para vidrio · Bogotá</p>
+        <h1 class="mt-6 text-[2.75rem] leading-[1.02] font-semibold !text-white sm:text-6xl lg:text-[4.6rem]">
+          Tus vidrios,<br />
+          <span class="bg-gradient-to-r from-ambar-300 via-ambar-200 to-ambar-400 bg-clip-text text-transparent">más inteligentes.</span>
+        </h1>
+        <p class="mt-7 max-w-xl text-lg leading-relaxed text-white/75 sm:text-xl">
+          Películas de <strong class="font-semibold text-white">control solar</strong>, <strong class="font-semibold text-white">seguridad</strong>, <strong class="font-semibold text-white">decorativas</strong> y <strong class="font-semibold text-white">sandblasting</strong> que reducen el calor, protegen a tu familia y transforman tus espacios. Sin obras, en un día.
+        </p>
+        <div class="mt-10 flex flex-wrap gap-3">
+          <a href="/contacto/" class="btn btn-primary text-base">Cotizar gratis <Icon name="arrow-right" class="size-4" /></a>
+          <a href="#asesor" class="btn btn-ghost-light text-base"><Icon name="sparkles" class="size-4" /> ¿Qué película necesito?</a>
+        </div>
+        <ul class="mt-12 grid max-w-xl grid-cols-3 gap-4 border-t border-white/10 pt-8 text-sm text-white/65">
+          <li><span class="block font-display text-2xl font-semibold text-white">99 %</span>bloqueo de rayos UV</li>
+          <li><span class="block font-display text-2xl font-semibold text-white">1 día</span>de instalación típica</li>
+          <li><span class="block font-display text-2xl font-semibold text-white">$0</span>visita técnica</li>
+        </ul>
+      </div>
+
+      <div class="relative mx-auto w-full max-w-md lg:max-w-none">
+        <GlassMotif class="absolute -top-10 -right-6 size-40 sm:-right-10 sm:size-56" />
+        <div class="hero-frame relative aspect-[4/5] overflow-hidden rounded-[2.25rem] shadow-[0_40px_80px_-30px_rgb(0_0_0_/_0.7)] ring-1 ring-white/10">
+          <Picture
+            src={fachadaAzul}
+            alt="Fachada de edificio corporativo con vidrios de control solar"
+            formats={['avif', 'webp']}
+            widths={[480, 720, 960, 1200]}
+            sizes="(min-width: 1024px) 560px, 90vw"
+            loading="eager"
+            fetchpriority="high"
+            class="h-full w-full object-cover"
+          />
+          <div class="absolute inset-0 bg-gradient-to-t from-petroleo-950/70 via-transparent to-transparent"></div>
+          <div class="absolute right-5 bottom-5 left-5 rounded-2xl glass p-4 sm:p-5">
+            <p class="text-xs font-medium tracking-wide text-white/60 uppercase">Más vendida</p>
+            <div class="mt-1 flex items-center justify-between gap-3">
+              <p class="font-display text-lg font-semibold text-white">Polarizado nanocerámico</p>
+              <a href="/peliculas/control-solar/polarizado-nanoceramico/" class="grid size-10 shrink-0 place-items-center rounded-full bg-ambar-400 text-petroleo-950 transition hover:scale-105" aria-label="Ver polarizado nanocerámico">
+                <Icon name="arrow-up-right" class="size-5" />
+              </a>
+            </div>
+            <div class="mt-3 flex gap-2 text-xs text-white/75">
+              <span class="rounded-full bg-white/10 px-2.5 py-1">Rechaza calor</span>
+              <span class="rounded-full bg-white/10 px-2.5 py-1">Sin metales</span>
+              <span class="rounded-full bg-white/10 px-2.5 py-1">No se decolora</span>
+            </div>
+          </div>
+        </div>
+        <div class="float-card absolute top-10 -left-4 hidden items-center gap-3 rounded-2xl bg-white p-3.5 pr-5 text-petroleo-900 shadow-2xl sm:-left-10 sm:flex">
+          <span class="grid size-10 place-items-center rounded-xl bg-ambar-400 text-petroleo-950"><Icon name="thermometer-sun" class="size-5" /></span>
+          <span class="text-sm leading-tight"><span class="block font-display font-semibold">Menos calor</span><span class="text-grafito/60">sin perder la vista</span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ MARQUESINA ═══ -->
+  <div class="relative overflow-hidden border-y border-petroleo-900/10 bg-concreto py-5" aria-hidden="true">
+    <div class="flex w-max animate-marquee gap-10 motion-reduce:animate-none">
+      {
+        [...marquee, ...marquee].map((m) => (
+          <span class="flex items-center gap-10 font-display text-lg font-medium whitespace-nowrap text-petroleo-900/70">
+            {m}
+            <span class="size-2 rotate-45 rounded-[2px] bg-ambar-400" />
+          </span>
+        ))
+      }
+    </div>
+  </div>
+
+  <!-- ═══ LÍNEAS ═══ -->
+  <section class="py-24 lg:py-32" id="lineas">
+    <div class="container-page">
+      <div class="flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
+        <SectionHeading
+          eyebrow="Nuestras líneas"
+          title={'Una película para <span class="text-petroleo-500">cada vidrio</span> y cada necesidad'}
+          lead="Cuatro líneas, trece referencias. Trabajamos solo con películas arquitectónicas de grado profesional."
+        />
+        <a href="/peliculas/" class="btn btn-outline shrink-0" data-reveal>Ver catálogo completo <Icon name="arrow-right" class="size-4" /></a>
+      </div>
+
+      <div class="mt-14 grid gap-5 md:grid-cols-2 lg:grid-cols-12 lg:grid-rows-2">
+        {
+          categories.map((c, i) => {
+            const layout = ['lg:col-span-7 lg:row-span-2', 'lg:col-span-5', 'lg:col-span-5', 'md:col-span-2 lg:col-span-12'][i];
+            const count = productsIn(c.slug).length;
+            return (
+              <a
+                href={categoryUrl(c.slug)}
+                class:list={['group relative isolate flex min-h-[22rem] flex-col justify-end overflow-hidden rounded-[1.75rem] p-7 text-white sm:p-9', layout, i === 3 && 'lg:min-h-[18rem]']}
+                data-reveal
+                style={`--reveal-delay:${i * 90}`}
+              >
+                <Picture
+                  src={i === 3 ? c.heroImage : c.image}
+                  alt={c.imageAlt}
+                  formats={['avif', 'webp']}
+                  widths={[480, 800, 1200, 1600]}
+                  sizes={i === 0 ? '(min-width: 1024px) 700px, 100vw' : i === 3 ? '(min-width: 1024px) 1200px, 100vw' : '(min-width: 1024px) 500px, 100vw'}
+                  class="absolute inset-0 -z-20 h-full w-full object-cover transition-transform duration-[1.2s] ease-out-expo group-hover:scale-[1.04]"
+                />
+                <div class="absolute inset-0 -z-10 bg-gradient-to-t from-petroleo-950/95 via-petroleo-950/45 to-petroleo-950/5 transition-opacity duration-500 group-hover:opacity-90"></div>
+                <span class="absolute top-6 left-6 grid size-12 place-items-center rounded-2xl glass text-ambar-300 sm:top-8 sm:left-8">
+                  <Icon name={c.icon} class="size-6" />
+                </span>
+                <span class="absolute top-7 right-7 rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-medium backdrop-blur-md sm:top-9 sm:right-9">
+                  {count} {count === 1 ? 'película' : 'películas'}
+                </span>
+                <div class="max-w-xl">
+                  <h3 class:list={['font-semibold !text-white', i === 0 ? 'text-3xl sm:text-4xl' : 'text-2xl sm:text-3xl']}>{c.short}</h3>
+                  <p class="mt-3 leading-relaxed text-white/75">{c.cardText}</p>
+                  <span class="mt-6 inline-flex items-center gap-2 font-display text-sm font-semibold text-ambar-300">
+                    Explorar {c.short.toLowerCase()}
+                    <Icon name="arrow-right" class="size-4 transition-transform duration-500 ease-out-expo group-hover:translate-x-1.5" />
+                  </span>
+                </div>
+              </a>
+            );
+          })
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ POR QUÉ MAVEN ═══ -->
+  <section class="relative overflow-hidden bg-white py-24 lg:py-32">
+    <div class="container-page grid items-center gap-16 lg:grid-cols-2">
+      <div class="relative order-2 lg:order-1" data-reveal>
+        <div class="relative aspect-[5/6] overflow-hidden rounded-[2rem]">
+          <Picture
+            src={salaVentanales}
+            alt="Sala luminosa con ventanales protegidos con película de control solar"
+            formats={['avif', 'webp']}
+            widths={[480, 800, 1100]}
+            sizes="(min-width: 1024px) 560px, 100vw"
+            class="h-full w-full object-cover"
+          />
+        </div>
+        <div class="absolute -right-4 -bottom-8 grid w-[17rem] gap-1 rounded-3xl bg-petroleo-900 p-6 text-white shadow-2xl sm:-right-8">
+          <p class="font-display text-5xl font-semibold text-ambar-300">99 %</p>
+          <p class="text-sm leading-snug text-white/75">de la radiación UV bloqueada. Tus pisos, muebles y piel, protegidos.</p>
+        </div>
+      </div>
+      <div class="order-1 lg:order-2">
+        <SectionHeading
+          eyebrow="Por qué Maven Films"
+          title={'No vendemos rollos. <span class="text-petroleo-500">Resolvemos vidrios.</span>'}
+          lead="Cada espacio tiene un problema distinto: calor de tarde, vecinos que ven hacia adentro, una vitrina vulnerable o una oficina sin identidad. Primero entendemos el problema; después elegimos la película."
+        />
+        <div class="mt-12 grid gap-8 sm:grid-cols-2">
+          {
+            benefits.map((b, i) => (
+              <div data-reveal style={`--reveal-delay:${i * 80}`}>
+                <span class="grid size-12 place-items-center rounded-2xl bg-concreto text-petroleo-900">
+                  <Icon name={b.icon} class="size-6" />
+                </span>
+                <h3 class="mt-5 text-lg font-semibold">{b.title}</h3>
+                <p class="mt-2 leading-relaxed text-grafito/70">{b.text}</p>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CIFRAS ═══ -->
+  <section class="border-y border-petroleo-900/10 bg-blanco-roto">
+    <div class="container-page grid grid-cols-2 divide-petroleo-900/10 lg:grid-cols-4 lg:divide-x">
+      {
+        stats.map((s, i) => (
+          <div class="px-2 py-10 lg:px-10" data-reveal style={`--reveal-delay:${i * 80}`}>
+            <p class="font-display text-4xl font-semibold tracking-tight text-petroleo-900 sm:text-5xl">{s.value}</p>
+            <p class="mt-2 text-sm text-grafito/65">{s.label}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  <ToneSimulator />
+
+  <Advisor />
+
+  <!-- ═══ SOLUCIONES ═══ -->
+  <section class="bg-concreto/60 py-24 lg:py-32">
+    <div class="container-page">
+      <SectionHeading eyebrow="Soluciones" title={'Pensado para <span class="text-petroleo-500">tu tipo de espacio</span>'} align="center" />
+      <div class="mt-14 grid gap-5 lg:grid-cols-3">
+        {
+          solutions.map((s, i) => (
+            <a href={`/soluciones/${s.slug}/`} class="group card relative overflow-hidden p-8 transition-all duration-500 ease-out-expo hover:-translate-y-1 hover:shadow-[var(--shadow-lift)]" data-reveal style={`--reveal-delay:${i * 90}`}>
+              <span class="grid size-14 place-items-center rounded-2xl bg-petroleo-900 text-ambar-300 transition group-hover:bg-ambar-400 group-hover:text-petroleo-950">
+                <Icon name={s.icon} class="size-6" />
+              </span>
+              <h3 class="mt-7 text-2xl font-semibold">{s.name}</h3>
+              <p class="mt-3 leading-relaxed text-grafito/70">{s.lead}</p>
+              <ul class="mt-6 space-y-2 border-t border-petroleo-900/10 pt-6 text-sm text-grafito/80">
+                {s.problems.slice(0, 3).map((p) => (
+                  <li class="flex items-start gap-2.5"><Icon name="check" class="mt-0.5 size-4 shrink-0 text-petroleo-500" />{p.title}</li>
+                ))}
+              </ul>
+              <span class="mt-7 inline-flex items-center gap-2 font-display text-sm font-semibold text-petroleo-700">
+                Ver soluciones <Icon name="arrow-right" class="size-4 transition-transform duration-500 group-hover:translate-x-1" />
+              </span>
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <ProcessSteps />
+
+  <!-- ═══ GUÍAS ═══ -->
+  {
+    guides.length > 0 && (
+      <section class="py-24 lg:py-32">
+        <div class="container-page">
+          <div class="flex flex-col justify-between gap-8 lg:flex-row lg:items-end">
+            <SectionHeading eyebrow="Guías y consejos" title={'Decide con información, <span class="text-petroleo-500">no con suposiciones</span>'} />
+            <a href="/guias/" class="btn btn-outline shrink-0" data-reveal>Todas las guías <Icon name="arrow-right" class="size-4" /></a>
+          </div>
+          <div class="mt-14 grid gap-6 md:grid-cols-3">
+            {guides.map((g, i) => (
+              <article class="group relative" data-reveal style={`--reveal-delay:${i * 90}`}>
+                <div class="aspect-[16/10] overflow-hidden rounded-3xl bg-concreto">
+                  <Picture src={g.data.image} alt={g.data.imageAlt} formats={['avif', 'webp']} widths={[400, 640, 800]} sizes="(min-width: 768px) 33vw, 100vw" class="h-full w-full object-cover transition-transform duration-700 ease-out-expo group-hover:scale-105" />
+                </div>
+                <p class="mt-5 text-sm font-medium text-petroleo-600">{g.data.category} · {g.data.readingTime} min de lectura</p>
+                <h3 class="mt-2 text-xl leading-snug font-semibold">
+                  <a href={`/guias/${g.id}/`} class="after:absolute after:inset-0">{g.data.title}</a>
+                </h3>
+                <p class="mt-2 line-clamp-2 leading-relaxed text-grafito/70">{g.data.description}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- ═══ FAQ ═══ -->
+  <section class="bg-white py-24 lg:py-32">
+    <div class="container-page grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+      <SectionHeading eyebrow="Preguntas frecuentes" title="Lo que todos nos preguntan" lead="¿Tienes otra duda? Escríbenos y te respondemos en minutos.">
+        <div class="mt-8 flex flex-wrap gap-3">
+          <a href={whatsappUrl('Hola Maven Films, tengo una pregunta sobre películas para vidrio.')} target="_blank" rel="noopener" class="btn btn-dark"><Icon name="whatsapp" class="size-4" /> Preguntar por WhatsApp</a>
+          <a href="/preguntas-frecuentes/" class="btn btn-outline">Ver todas</a>
+        </div>
+      </SectionHeading>
+      <FaqList faqs={faqs} />
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>
+
+<style>
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-copy > * {
+      animation: rise 1s var(--ease-out-expo) both;
+    }
+    .hero-copy > :nth-child(2) { animation-delay: 80ms; }
+    .hero-copy > :nth-child(3) { animation-delay: 160ms; }
+    .hero-copy > :nth-child(4) { animation-delay: 240ms; }
+    .hero-copy > :nth-child(5) { animation-delay: 320ms; }
+    .hero-frame {
+      animation: frame-in 1.4s var(--ease-out-expo) both;
+      animation-delay: 120ms;
+    }
+    .float-card {
+      animation: float 6s ease-in-out infinite;
+    }
+  }
+  @keyframes rise {
+    from { opacity: 0; transform: translateY(18px); }
+  }
+  @keyframes frame-in {
+    from { opacity: 0; transform: translateY(24px) scale(0.97); clip-path: inset(8% 8% 8% 8% round 2.25rem); }
+    to { clip-path: inset(0 0 0 0 round 2.25rem); }
+  }
+  @keyframes float {
+    50% { transform: translateY(-10px); }
+  }
+</style>

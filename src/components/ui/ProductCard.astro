@@ -1,0 +1,46 @@
+---
+import { Picture } from 'astro:assets';
+import Icon from '@/components/ui/Icon.astro';
+import { productUrl, type Product } from '@/data/catalog';
+
+interface Props { product: Product; headingLevel?: 'h2' | 'h3'; delay?: number }
+const { product: p, headingLevel: H = 'h3', delay = 0 } = Astro.props;
+---
+
+<article
+  class="group card relative flex h-full flex-col overflow-hidden transition-all duration-500 ease-out-expo hover:-translate-y-1 hover:shadow-[var(--shadow-lift)]"
+  data-reveal
+  style={`--reveal-delay:${delay}`}
+>
+  <div class="relative aspect-[4/3] overflow-hidden bg-concreto">
+    <Picture
+      src={p.image}
+      alt={p.imageAlt}
+      formats={['avif', 'webp']}
+      widths={[400, 640, 800]}
+      sizes="(min-width: 1024px) 380px, (min-width: 640px) 50vw, 100vw"
+      class="h-full w-full object-cover transition-transform duration-700 ease-out-expo group-hover:scale-105"
+    />
+    <div class="absolute inset-0 bg-gradient-to-t from-petroleo-950/55 via-transparent to-transparent"></div>
+    {p.badge && <span class="absolute top-4 left-4 rounded-full bg-ambar-400 px-3 py-1 font-display text-xs font-semibold text-petroleo-950 shadow">{p.badge}</span>}
+    {
+      p.options && (
+        <div class="absolute right-4 bottom-4 left-4 flex flex-wrap gap-1.5">
+          {p.options.values.slice(0, 4).map((v) => (
+            <span class="rounded-full border border-white/25 bg-petroleo-950/50 px-2.5 py-0.5 text-xs font-medium text-white backdrop-blur-md">{v}</span>
+          ))}
+        </div>
+      )
+    }
+  </div>
+  <div class="flex flex-1 flex-col p-6">
+    <H class="text-xl font-semibold">
+      <a href={productUrl(p)} class="after:absolute after:inset-0">{p.name}</a>
+    </H>
+    <p class="mt-2 flex-1 leading-relaxed text-grafito/70">{p.summary}</p>
+    <span class="mt-5 inline-flex items-center gap-2 font-display text-sm font-semibold text-petroleo-700">
+      Ver detalles
+      <Icon name="arrow-right" class="size-4 transition-transform duration-500 ease-out-expo group-hover:translate-x-1" />
+    </span>
+  </div>
+</article>

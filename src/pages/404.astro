@@ -1,0 +1,27 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/ui/Icon.astro';
+import GlassMotif from '@/components/ui/GlassMotif.astro';
+import { categories, categoryUrl } from '@/data/catalog';
+---
+
+<BaseLayout title="Página no encontrada" description="La página que buscas no existe o fue movida." noindex>
+  <section class="relative isolate grid min-h-[85dvh] place-items-center overflow-hidden bg-petroleo-950 px-5 pt-28 pb-20 text-white">
+    <GlassMotif class="absolute top-1/2 left-1/2 -z-10 size-[30rem] -translate-x-1/2 -translate-y-1/2 opacity-40" />
+    <div class="max-w-2xl text-center">
+      <p class="font-display text-8xl font-semibold text-ambar-300 sm:text-9xl">404</p>
+      <h1 class="mt-6 text-3xl font-semibold !text-white sm:text-4xl">Este vidrio está esmerilado: no se ve nada</h1>
+      <p class="mt-4 text-lg text-white/70">La página que buscas no existe o cambió de lugar. Prueba con una de nuestras líneas:</p>
+      <ul class="mt-10 flex flex-wrap justify-center gap-3">
+        {
+          categories.map((c) => (
+            <li>
+              <a href={categoryUrl(c.slug)} class="btn btn-ghost-light"><Icon name={c.icon} class="size-4" />{c.short}</a>
+            </li>
+          ))
+        }
+      </ul>
+      <a href="/" class="btn btn-primary mt-8">Volver al inicio <Icon name="arrow-right" class="size-4" /></a>
+    </div>
+  </section>
+</BaseLayout>

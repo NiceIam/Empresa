@@ -1,0 +1,32 @@
+---
+import Icon from '@/components/ui/Icon.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import { processSteps } from '@/data/solutions';
+---
+
+<section class="bg-concreto/60 py-24 lg:py-32">
+  <div class="container-page">
+    <SectionHeading
+      eyebrow="Cómo trabajamos"
+      title={'De tu mensaje a un vidrio protegido, <span class="text-petroleo-500">en 4 pasos</span>'}
+      lead="Un proceso claro, con un asesor que te acompaña de principio a fin."
+    />
+    <div class="relative mt-16">
+      <div aria-hidden="true" class="absolute top-7 right-[12%] left-[12%] hidden h-px bg-gradient-to-r from-ambar-400/0 via-ambar-400/60 to-ambar-400/0 lg:block"></div>
+      <ol class="relative grid gap-10 md:grid-cols-2 lg:grid-cols-4 lg:gap-6">
+        {
+          processSteps.map((s, i) => (
+            <li data-reveal style={`--reveal-delay:${i * 100}`}>
+              <div class="relative z-10 grid size-14 place-items-center rounded-2xl bg-petroleo-900 text-ambar-300 shadow-lg">
+                <Icon name={s.icon} class="size-6" />
+                <span class="absolute -top-2 -right-2 grid size-6 place-items-center rounded-full bg-ambar-400 font-display text-xs font-bold text-petroleo-950">{i + 1}</span>
+              </div>
+              <h3 class="mt-6 text-xl font-semibold">{s.title}</h3>
+              <p class="mt-2 leading-relaxed text-grafito/75">{s.text}</p>
+            </li>
+          ))
+        }
+      </ol>
+    </div>
+  </div>
+</section>

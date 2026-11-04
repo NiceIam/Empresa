@@ -1,0 +1,85 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import Icon from '@/components/ui/Icon.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import FaqList from '@/components/ui/FaqList.astro';
+import ProcessSteps from '@/components/sections/ProcessSteps.astro';
+import CtaBand from '@/components/sections/CtaBand.astro';
+import { solutions, type Solution } from '@/data/solutions';
+import { products, productUrl } from '@/data/catalog';
+import { whatsappUrl } from '@/config/site';
+import { faqSchema, serviceSchema } from '@/lib/schema';
+
+export const getStaticPaths = (() => solutions.map((s) => ({ params: { segmento: s.slug }, props: { solution: s } }))) satisfies GetStaticPaths;
+
+interface Props { solution: Solution }
+const { solution: s } = Astro.props;
+const url = `/soluciones/${s.slug}/`;
+const bySlug = (slug: string) => products.find((p) => p.slug === slug)!;
+const breadcrumbs = [
+  { name: 'Inicio', href: '/' },
+  { name: 'Soluciones', href: url },
+  { name: s.name, href: url },
+];
+const waMsg = `Hola Maven Films, necesito películas para vidrio para ${s.name.toLowerCase()}.`;
+const offerSlugs = [...new Set(s.problems.flatMap((p) => p.products))];
+---
+
+<BaseLayout
+  title={s.seoTitle}
+  description={s.seoDescription}
+  image={s.image}
+  imageAlt={s.imageAlt}
+  breadcrumbs={[breadcrumbs[0], breadcrumbs[2]]}
+  whatsappMessage={waMsg}
+  schema={[
+    serviceSchema({ name: s.h1, description: s.seoDescription, url, serviceType: 'Instalación de películas para vidrio', offers: offerSlugs.map((sl) => ({ name: bySlug(sl).name, url: productUrl(bySlug(sl)) })) }),
+    faqSchema(s.faqs),
+  ]}
+>
+  <PageHero eyebrow={`Soluciones para ${s.name.toLowerCase()}`} title={s.h1} lead={s.lead} image={s.image} imageAlt={s.imageAlt} breadcrumbs={[breadcrumbs[0], breadcrumbs[2]]} size="lg">
+    <div class="mt-10 flex flex-wrap gap-3">
+      <a href="/contacto/" class="btn btn-primary">Agendar visita técnica <Icon name="arrow-right" class="size-4" /></a>
+      <a href={whatsappUrl(waMsg)} target="_blank" rel="noopener" class="btn btn-ghost-light"><Icon name="whatsapp" class="size-4" /> WhatsApp</a>
+    </div>
+  </PageHero>
+
+  <section class="py-24 lg:py-32">
+    <div class="container-page">
+      <SectionHeading eyebrow="Problema → solución" title={'¿Qué está pasando con <span class="text-petroleo-500">tus vidrios</span>?'} lead="Identifica tu situación y descubre qué película la resuelve." />
+      <div class="mt-14 grid gap-6 md:grid-cols-2">
+        {
+          s.problems.map((pr, i) => (
+            <article class="card flex flex-col p-7 sm:p-9" data-reveal style={`--reveal-delay:${i * 80}`}>
+              <span class="grid size-12 place-items-center rounded-2xl bg-ambar-400 text-petroleo-950"><Icon name={pr.icon} class="size-6" /></span>
+              <h3 class="mt-6 text-2xl font-semibold">{pr.title}</h3>
+              <p class="mt-3 flex-1 leading-relaxed text-grafito/75">{pr.text}</p>
+              <ul class="mt-6 flex flex-wrap gap-2 border-t border-petroleo-900/10 pt-6">
+                {pr.products.map((slug) => (
+                  <li>
+                    <a href={productUrl(bySlug(slug))} class="inline-flex items-center gap-1.5 rounded-full bg-concreto px-4 py-2 text-sm font-semibold text-petroleo-900 transition hover:bg-petroleo-900 hover:text-white">
+                      {bySlug(slug).name} <Icon name="arrow-up-right" class="size-3.5" />
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <ProcessSteps />
+
+  <section class="bg-white py-24 lg:py-28">
+    <div class="container-page grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+      <SectionHeading eyebrow="Preguntas frecuentes" title={`Películas para ${s.name.toLowerCase()}`} />
+      <FaqList faqs={s.faqs} />
+    </div>
+  </section>
+
+  <CtaBand whatsappMessage={waMsg} />
+</BaseLayout>

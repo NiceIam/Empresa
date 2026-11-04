@@ -1,0 +1,178 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/sora/wght.css';
+@import '@fontsource-variable/inter/wght.css';
+
+/* ─── Tokens de marca Maven Films ─────────────────────────────────────────── */
+@theme {
+  --font-display: 'Sora Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Petróleo — base de la marca (#0F2E3A = 900) */
+  --color-petroleo-50: #eef5f7;
+  --color-petroleo-100: #d5e5ea;
+  --color-petroleo-200: #aac9d3;
+  --color-petroleo-300: #77a5b4;
+  --color-petroleo-400: #4a7f91;
+  --color-petroleo-500: #2f6376;
+  --color-petroleo-600: #234f60;
+  --color-petroleo-700: #1a4050;
+  --color-petroleo-800: #143643;
+  --color-petroleo-900: #0f2e3a;
+  --color-petroleo-950: #091e26;
+
+  /* Ámbar solar — acento (#E39B2D). Nunca como texto sobre blanco. */
+  --color-ambar-50: #fdf6ea;
+  --color-ambar-100: #f9e7c6;
+  --color-ambar-200: #f3cf8d;
+  --color-ambar-300: #ecb658;
+  --color-ambar-400: #e39b2d;
+  --color-ambar-500: #d1861a;
+  --color-ambar-600: #b06b13;
+
+  /* Neutros */
+  --color-acero: #c5cbd0;
+  --color-acero-claro: #dde1e4;
+  --color-concreto: #e9e7e2;
+  --color-grafito: #22262a;
+  --color-blanco-roto: #f7f7f5;
+
+  --radius-glass: 1.25rem;
+  --shadow-glass: 0 1px 0 0 rgb(255 255 255 / 0.08) inset, 0 20px 50px -20px rgb(9 30 38 / 0.45);
+  --shadow-card: 0 1px 2px rgb(15 46 58 / 0.06), 0 12px 32px -12px rgb(15 46 58 / 0.18);
+  --shadow-lift: 0 2px 4px rgb(15 46 58 / 0.06), 0 24px 48px -16px rgb(15 46 58 / 0.28);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+
+  --animate-marquee: marquee 40s linear infinite;
+  @keyframes marquee {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); }
+  }
+}
+
+/* ─── Base ────────────────────────────────────────────────────────────────── */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-rendering: optimizeLegibility;
+    scroll-padding-top: 6rem;
+    color-scheme: light;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+  }
+  body {
+    @apply bg-blanco-roto font-sans text-grafito antialiased;
+    font-feature-settings: 'cv11', 'ss01';
+  }
+  h1, h2, h3, h4 {
+    @apply font-display text-petroleo-900;
+    text-wrap: balance;
+    letter-spacing: -0.025em;
+  }
+  p { text-wrap: pretty; }
+  ::selection { @apply bg-ambar-300 text-petroleo-950; }
+  :focus-visible {
+    outline: 2px solid var(--color-ambar-400);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+  summary { cursor: pointer; }
+  summary::-webkit-details-marker { display: none; }
+}
+
+/* Navegación entre páginas con transición nativa (sin JavaScript). */
+@view-transition { navigation: auto; }
+@media (prefers-reduced-motion: reduce) {
+  @view-transition { navigation: none; }
+}
+
+/* ─── Componentes ─────────────────────────────────────────────────────────── */
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-7xl px-5 sm:px-8 lg:px-10;
+  }
+
+  .eyebrow {
+    @apply inline-flex items-center gap-3 font-display text-xs font-semibold tracking-[0.18em] text-petroleo-600 uppercase;
+  }
+  .eyebrow::after {
+    content: '';
+    @apply h-0.5 w-10 rounded-full bg-ambar-400;
+  }
+  .eyebrow-light { @apply text-ambar-300; }
+
+  .btn {
+    @apply relative inline-flex items-center justify-center gap-2 rounded-full px-6 py-3.5 font-display text-[0.95rem] font-semibold whitespace-nowrap transition-all duration-300 ease-out-expo select-none;
+  }
+  .btn:active { transform: scale(0.98); }
+  .btn-primary {
+    @apply bg-ambar-400 text-petroleo-950 shadow-[0_8px_24px_-8px_rgb(227_155_45_/_0.6)] hover:bg-ambar-300 hover:shadow-[0_12px_32px_-8px_rgb(227_155_45_/_0.7)];
+  }
+  .btn-dark { @apply bg-petroleo-900 text-blanco-roto hover:bg-petroleo-700; }
+  .btn-ghost-light {
+    @apply border border-white/25 bg-white/5 text-white backdrop-blur-md hover:border-white/50 hover:bg-white/10;
+  }
+  .btn-outline { @apply border border-petroleo-900/20 text-petroleo-900 hover:border-petroleo-900 hover:bg-petroleo-900 hover:text-white; }
+
+  .glass {
+    @apply border border-white/15 bg-white/8 backdrop-blur-xl;
+    box-shadow: var(--shadow-glass);
+  }
+
+  .card {
+    @apply rounded-[var(--radius-glass)] border border-petroleo-900/8 bg-white;
+    box-shadow: var(--shadow-card);
+  }
+
+  .link-underline {
+    background-image: linear-gradient(currentColor, currentColor);
+    background-size: 0% 1.5px;
+    background-position: 0 100%;
+    background-repeat: no-repeat;
+    transition: background-size 0.35s var(--ease-out-expo);
+  }
+  .link-underline:hover { background-size: 100% 1.5px; }
+
+  /* Texto largo (guías, legales) */
+  .prose-maven {
+    @apply max-w-none text-[1.0625rem] leading-[1.8] text-grafito/90;
+  }
+  .prose-maven > * + * { @apply mt-5; }
+  .prose-maven h2 { @apply mt-14 mb-4 text-2xl font-semibold sm:text-[1.75rem]; }
+  .prose-maven h3 { @apply mt-10 mb-3 text-xl font-semibold; }
+  .prose-maven a { @apply font-medium text-petroleo-700 underline decoration-ambar-400 decoration-2 underline-offset-4 hover:text-petroleo-900; }
+  .prose-maven strong { @apply font-semibold text-petroleo-900; }
+  .prose-maven ul { @apply list-none space-y-2.5 pl-0; }
+  .prose-maven ul > li { @apply relative pl-7; }
+  .prose-maven ul > li::before {
+    content: '';
+    @apply absolute top-[0.7em] left-1 size-2 rotate-45 rounded-[2px] bg-ambar-400;
+  }
+  .prose-maven ol { @apply list-decimal space-y-2.5 pl-6 marker:font-semibold marker:text-petroleo-600; }
+  .prose-maven blockquote { @apply rounded-r-2xl border-l-4 border-ambar-400 bg-ambar-50 px-6 py-4 text-petroleo-900; }
+  .prose-maven table { @apply w-full border-collapse overflow-hidden rounded-2xl text-left text-[0.95rem]; }
+  .prose-maven thead { @apply bg-petroleo-900 text-white; }
+  .prose-maven th { @apply px-4 py-3 font-display font-semibold; }
+  .prose-maven td { @apply border-b border-petroleo-900/10 px-4 py-3 align-top; }
+  .prose-maven tbody tr:nth-child(even) { @apply bg-concreto/40; }
+  .prose-maven .table-wrap { @apply overflow-x-auto rounded-2xl border border-petroleo-900/10; }
+}
+
+@utility bg-grain {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.5'/%3E%3C/svg%3E");
+}
+
+/* ─── Revelado al hacer scroll (progresivo: sin JS todo es visible) ───────── */
+@media (prefers-reduced-motion: no-preference) {
+  .js [data-reveal] {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.9s var(--ease-out-expo), transform 0.9s var(--ease-out-expo);
+    transition-delay: calc(var(--reveal-delay, 0) * 1ms);
+  }
+  .js [data-reveal].is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}

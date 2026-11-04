@@ -1,0 +1,81 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import { site } from '@/config/site';
+
+const updated = '4 de noviembre de 2026';
+const breadcrumbs = [
+  { name: 'Inicio', href: '/' },
+  { name: 'Política de tratamiento de datos', href: '/politica-de-privacidad/' },
+];
+---
+
+<BaseLayout
+  title="Política de tratamiento de datos personales"
+  description={`Política de tratamiento de datos personales de ${site.legalName} conforme a la Ley 1581 de 2012 y el Decreto 1377 de 2013.`}
+  breadcrumbs={breadcrumbs}
+>
+  <PageHero eyebrow="Legal" title="Política de tratamiento de datos personales" lead={`Última actualización: ${updated}`} breadcrumbs={breadcrumbs} size="sm" />
+
+  <section class="py-16 lg:py-24">
+    <div class="container-page max-w-3xl">
+      <div class="prose-maven">
+        <blockquote>
+          Documento base para revisión jurídica. Antes de publicar, valídalo con un abogado y completa los datos de identificación de la empresa.
+        </blockquote>
+
+        <h2>1. Responsable del tratamiento</h2>
+        <p>
+          <strong>{site.legalName}</strong>{site.nit && <>, NIT {site.nit}</>}, con domicilio en {site.address.locality}, {site.address.countryName}.
+          Correo de contacto: <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a>. Teléfono: {site.contact.phoneDisplay}.
+        </p>
+
+        <h2>2. Marco legal</h2>
+        <p>Esta política se rige por la Ley Estatutaria 1581 de 2012, el Decreto 1377 de 2013 (compilado en el Decreto 1074 de 2015) y demás normas que las modifiquen o complementen.</p>
+
+        <h2>3. Datos que recolectamos</h2>
+        <ul>
+          <li>Datos de identificación y contacto: nombre, número de celular, correo electrónico y ciudad.</li>
+          <li>Información del proyecto: tipo de espacio, medidas aproximadas, fotografías y mensajes que nos envíes.</li>
+          <li>Datos de navegación anónimos (cookies analíticas), solo si están habilitadas en el sitio.</li>
+        </ul>
+
+        <h2>4. Finalidades</h2>
+        <ul>
+          <li>Responder solicitudes de información y cotización.</li>
+          <li>Agendar y realizar visitas técnicas e instalaciones.</li>
+          <li>Emitir facturas y cumplir obligaciones legales y contractuales.</li>
+          <li>Gestionar garantías y servicio posventa.</li>
+          <li>Enviar información comercial sobre nuestros productos, solo si lo autorizas expresamente.</li>
+        </ul>
+
+        <h2>5. Derechos del titular</h2>
+        <p>Como titular de los datos puedes:</p>
+        <ul>
+          <li>Conocer, actualizar y rectificar tus datos personales.</li>
+          <li>Solicitar prueba de la autorización otorgada.</li>
+          <li>Ser informado sobre el uso que se ha dado a tus datos.</li>
+          <li>Presentar quejas ante la Superintendencia de Industria y Comercio (SIC).</li>
+          <li>Revocar la autorización y/o solicitar la supresión de tus datos cuando no exista un deber legal o contractual de conservarlos.</li>
+          <li>Acceder gratuitamente a tus datos personales.</li>
+        </ul>
+
+        <h2>6. Procedimiento para consultas y reclamos</h2>
+        <p>
+          Puedes ejercer tus derechos escribiendo a <a href={`mailto:${site.contact.email}`}>{site.contact.email}</a> con el asunto
+          «Protección de datos», indicando tu nombre, documento de identidad, descripción de la solicitud y datos de contacto.
+        </p>
+        <ul>
+          <li><strong>Consultas:</strong> se atenderán en un máximo de diez (10) días hábiles.</li>
+          <li><strong>Reclamos:</strong> se atenderán en un máximo de quince (15) días hábiles.</li>
+        </ul>
+
+        <h2>7. Seguridad de la información</h2>
+        <p>Aplicamos medidas técnicas, humanas y administrativas razonables para proteger tus datos contra pérdida, consulta, uso o acceso no autorizado.</p>
+
+        <h2>8. Vigencia</h2>
+        <p>Esta política rige desde su publicación. Los datos se conservarán mientras sean necesarios para las finalidades descritas y para cumplir obligaciones legales.</p>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

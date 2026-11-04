@@ -1,0 +1,204 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { Picture, getImage } from 'astro:assets';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/ui/Breadcrumbs.astro';
+import Icon from '@/components/ui/Icon.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import ProductCard from '@/components/ui/ProductCard.astro';
+import FaqList from '@/components/ui/FaqList.astro';
+import CtaBand from '@/components/sections/CtaBand.astro';
+import { products, getCategory, productsIn, productUrl, categoryUrl, type Product } from '@/data/catalog';
+import { whatsappUrl } from '@/config/site';
+import { faqSchema, serviceSchema, abs } from '@/lib/schema';
+
+export const getStaticPaths = (() =>
+  products.map((p) => ({ params: { categoria: p.category, producto: p.slug }, props: { product: p } }))) satisfies GetStaticPaths;
+
+interface Props { product: Product }
+const { product: p } = Astro.props;
+const category = getCategory(p.category);
+const url = productUrl(p);
+const related = productsIn(p.category).filter((o) => o.slug !== p.slug).slice(0, 3);
+const ogImg = await getImage({ src: p.image, width: 1200, height: 630, fit: 'cover', format: 'jpg', quality: 80 });
+
+const breadcrumbs = [
+  { name: 'Inicio', href: '/' },
+  { name: 'Películas', href: '/peliculas/' },
+  { name: category.short, href: categoryUrl(category.slug) },
+  { name: p.name, href: url },
+];
+const waMsg = `Hola Maven Films, quiero cotizar la película ${p.name}.`;
+const ratingLabels = { calor: 'Rechazo de calor', privacidad: 'Privacidad', seguridad: 'Seguridad', visibilidad: 'Visibilidad' } as const;
+const ratings = Object.entries(p.ratings ?? {}) as [keyof typeof ratingLabels, number][];
+---
+
+<BaseLayout
+  title={p.seoTitle}
+  description={p.seoDescription}
+  image={p.image}
+  imageAlt={p.imageAlt}
+  breadcrumbs={breadcrumbs}
+  whatsappMessage={waMsg}
+  schema={[
+    serviceSchema({ name: p.name, description: p.seoDescription, url, image: abs(ogImg.src), serviceType: category.name }),
+    ...(p.faqs.length ? [faqSchema(p.faqs)] : []),
+  ]}
+>
+  <!-- Encabezado de producto -->
+  <section class="relative isolate overflow-hidden bg-petroleo-950 pt-28 pb-16 text-white lg:pt-36 lg:pb-24">
+    <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_70%_60%_at_80%_10%,rgb(47_99_118_/_0.4),transparent_70%)]"></div>
+    <div class="absolute inset-0 -z-10 bg-grain opacity-[0.05]"></div>
+    <div class="container-page">
+      <Breadcrumbs items={breadcrumbs} class="mb-10" />
+      <div class="grid items-center gap-12 lg:grid-cols-2 lg:gap-16">
+        <div>
+          <div class="flex flex-wrap items-center gap-2">
+            <a href={categoryUrl(category.slug)} class="inline-flex items-center gap-2 rounded-full border border-white/15 px-3 py-1 text-sm text-white/75 transition hover:border-white/40">
+              <Icon name={category.icon} class="size-4 text-ambar-300" />{category.short}
+            </a>
+            {p.badge && <span class="rounded-full bg-ambar-400 px-3 py-1 font-display text-xs font-semibold text-petroleo-950">{p.badge}</span>}
+          </div>
+          <h1 class="mt-6 text-[2.5rem] leading-[1.05] font-semibold !text-white sm:text-6xl">{p.name}</h1>
+          <p class="mt-5 max-w-xl text-lg leading-relaxed text-white/75 sm:text-xl">{p.summary}</p>
+
+          {
+            p.options && (
+              <div class="mt-8">
+                <p class="text-sm font-medium text-white/55">{p.options.label}</p>
+                <ul class="mt-3 flex flex-wrap gap-2">
+                  {p.options.values.map((v) => (
+                    <li class="rounded-full border border-white/20 bg-white/5 px-4 py-1.5 font-display text-sm font-semibold">{v}</li>
+                  ))}
+                </ul>
+              </div>
+            )
+          }
+
+          <ul class="mt-8 grid gap-3 sm:grid-cols-2">
+            {
+              p.highlights.map((h) => (
+                <li class="flex items-start gap-3 text-white/85">
+                  <span class="mt-0.5 grid size-5 shrink-0 place-items-center rounded-full bg-ambar-400 text-petroleo-950"><Icon name="check" class="size-3" strokeWidth={3} /></span>
+                  {h}
+                </li>
+              ))
+            }
+          </ul>
+
+          <div class="mt-10 flex flex-wrap gap-3">
+            <a href={whatsappUrl(waMsg)} target="_blank" rel="noopener" class="btn btn-primary"><Icon name="whatsapp" class="size-4" /> Cotizar por WhatsApp</a>
+            <a href={`/contacto/?linea=${p.category}`} class="btn btn-ghost-light">Solicitar visita técnica</a>
+          </div>
+        </div>
+
+        <div class="relative">
+          <div class="aspect-[4/3] overflow-hidden rounded-[2rem] shadow-[0_40px_80px_-30px_rgb(0_0_0_/_0.7)] ring-1 ring-white/10 lg:aspect-[4/4.2]">
+            <Picture
+              src={p.image}
+              alt={p.imageAlt}
+              formats={['avif', 'webp']}
+              widths={[480, 720, 960, 1200]}
+              sizes="(min-width: 1024px) 600px, 100vw"
+              loading="eager"
+              fetchpriority="high"
+              class="h-full w-full object-cover"
+            />
+          </div>
+          {
+            ratings.length > 0 && (
+              <dl class="absolute -bottom-8 left-4 border border-white/10 bg-petroleo-950/85 shadow-2xl backdrop-blur-xl grid w-[min(20rem,calc(100%-2rem))] gap-3 rounded-3xl p-5 sm:left-auto sm:-right-6">
+                {ratings.map(([k, v]) => (
+                  <div class="flex items-center justify-between gap-4">
+                    <dt class="text-xs font-medium text-white/75">{ratingLabels[k]}</dt>
+                    <dd class="flex gap-1" aria-label={`${v} de 5`}>
+                      {Array.from({ length: 5 }, (_, i) => <span class:list={['h-1.5 w-5 rounded-full', i < v ? 'bg-ambar-400' : 'bg-white/20']} />)}
+                    </dd>
+                  </div>
+                ))}
+              </dl>
+            )
+          }
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Detalle -->
+  <section class="py-24 lg:py-28">
+    <div class="container-page grid gap-14 lg:grid-cols-[1.2fr_0.8fr] lg:gap-20">
+      <div>
+        <p class="eyebrow">Descripción</p>
+        <h2 class="mt-4 text-3xl leading-tight font-semibold sm:text-4xl">¿Qué es la película {p.name.toLowerCase()}?</h2>
+        <div class="prose-maven mt-6">
+          {p.description.map((d) => <p>{d}</p>)}
+        </div>
+
+        <h2 class="mt-16 text-2xl font-semibold sm:text-3xl">Ideal para</h2>
+        <ul class="mt-6 grid gap-3 sm:grid-cols-2">
+          {
+            p.idealFor.map((u) => (
+              <li class="flex items-center gap-3 rounded-2xl border border-petroleo-900/10 bg-white px-5 py-4 font-medium text-petroleo-900">
+                <Icon name="check" class="size-5 text-petroleo-500" />
+                {u}
+              </li>
+            ))
+          }
+        </ul>
+      </div>
+
+      <aside class="self-start lg:sticky lg:top-28">
+        <div class="card overflow-hidden">
+          <h2 class="border-b border-petroleo-900/10 px-6 py-5 text-lg font-semibold">Ficha técnica</h2>
+          <dl class="divide-y divide-petroleo-900/8">
+            {
+              p.specs.map((s) => (
+                <div class="grid grid-cols-[0.9fr_1.1fr] gap-4 px-6 py-4 text-[0.95rem]">
+                  <dt class="text-grafito/60">{s.label}</dt>
+                  <dd class="font-medium text-petroleo-900">{s.value}</dd>
+                </div>
+              ))
+            }
+          </dl>
+          <p class="bg-concreto/50 px-6 py-4 text-xs leading-relaxed text-grafito/60">
+            Valores de referencia. El desempeño final depende del tono y del tipo de vidrio; te entregamos la ficha del fabricante con tu cotización.
+          </p>
+        </div>
+        <div class="mt-5 rounded-3xl bg-petroleo-900 p-6 text-white">
+          <p class="font-display text-lg font-semibold">¿Es la película correcta para ti?</p>
+          <p class="mt-2 text-sm leading-relaxed text-white/70">Un asesor revisa tu caso y te confirma la mejor opción, sin costo.</p>
+          <a href={whatsappUrl(waMsg)} target="_blank" rel="noopener" class="btn btn-primary mt-5 w-full"><Icon name="whatsapp" class="size-4" /> Hablar con un asesor</a>
+        </div>
+      </aside>
+    </div>
+  </section>
+
+  {
+    p.faqs.length > 0 && (
+      <section class="bg-white py-24 lg:py-28">
+        <div class="container-page grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+          <SectionHeading eyebrow="Preguntas frecuentes" title={`Sobre ${p.name.toLowerCase()}`} />
+          <FaqList faqs={[...p.faqs, ...category.faqs.slice(0, 2)]} />
+        </div>
+      </section>
+    )
+  }
+
+  {
+    related.length > 0 && (
+      <section class="py-24 lg:py-28">
+        <div class="container-page">
+          <div class="flex flex-col justify-between gap-6 sm:flex-row sm:items-end">
+            <SectionHeading eyebrow={category.short} title="También te puede interesar" />
+            <a href={categoryUrl(category.slug)} class="btn btn-outline shrink-0">Ver toda la línea <Icon name="arrow-right" class="size-4" /></a>
+          </div>
+          <div class="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {related.map((r, i) => <ProductCard product={r} delay={i * 80} />)}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <CtaBand whatsappMessage={waMsg} />
+</BaseLayout>

@@ -1,0 +1,74 @@
+---
+import { Picture } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import Icon from '@/components/ui/Icon.astro';
+import CtaBand from '@/components/sections/CtaBand.astro';
+import { itemListSchema } from '@/lib/schema';
+
+const guides = (await getCollection('guias')).sort((a, b) => b.data.published.valueOf() - a.data.published.valueOf());
+const [featured, ...rest] = guides;
+const fmt = new Intl.DateTimeFormat('es-CO', { day: 'numeric', month: 'long', year: 'numeric' });
+const breadcrumbs = [
+  { name: 'Inicio', href: '/' },
+  { name: 'Guías', href: '/guias/' },
+];
+---
+
+<BaseLayout
+  title="Guías sobre películas para vidrio, polarizado y sandblasting"
+  description="Aprende a elegir películas para vidrio: nanocerámica vs. polarizado, qué tono elegir, película de seguridad 4 vs. 8 mil, sandblasting vs. esmerilado y cuidados."
+  breadcrumbs={breadcrumbs}
+  schema={[itemListSchema('Guías de Maven Films', guides.map((g) => ({ name: g.data.title, url: `/guias/${g.id}/` })))]}
+>
+  <PageHero
+    eyebrow="Guías y consejos"
+    title={'Todo lo que debes saber antes de <span class="text-ambar-300">elegir una película</span>'}
+    lead="Explicaciones claras, sin tecnicismos innecesarios, para que tomes la mejor decisión para tus vidrios."
+    breadcrumbs={breadcrumbs}
+  />
+
+  <section class="py-20 lg:py-28">
+    <div class="container-page">
+      {
+        featured && (
+          <article class="group relative grid overflow-hidden rounded-[2rem] bg-white shadow-[var(--shadow-card)] lg:grid-cols-2" data-reveal>
+            <div class="aspect-[16/10] overflow-hidden lg:aspect-auto">
+              <Picture src={featured.data.image} alt={featured.data.imageAlt} formats={['avif', 'webp']} widths={[640, 960, 1200]} sizes="(min-width: 1024px) 50vw, 100vw" loading="eager" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+            </div>
+            <div class="flex flex-col justify-center p-8 sm:p-12">
+              <p class="text-sm font-medium text-petroleo-600">{featured.data.category} · {featured.data.readingTime} min</p>
+              <h2 class="mt-3 text-3xl leading-tight font-semibold sm:text-4xl">
+                <a href={`/guias/${featured.id}/`} class="after:absolute after:inset-0">{featured.data.title}</a>
+              </h2>
+              <p class="mt-4 leading-relaxed text-grafito/70">{featured.data.description}</p>
+              <span class="mt-8 inline-flex items-center gap-2 font-display text-sm font-semibold text-petroleo-700">
+                Leer guía <Icon name="arrow-right" class="size-4 transition-transform group-hover:translate-x-1" />
+              </span>
+            </div>
+          </article>
+        )
+      }
+
+      <div class="mt-12 grid gap-x-6 gap-y-12 md:grid-cols-2 lg:grid-cols-3">
+        {
+          rest.map((g, i) => (
+            <article class="group relative" data-reveal style={`--reveal-delay:${i * 70}`}>
+              <div class="aspect-[16/10] overflow-hidden rounded-3xl bg-concreto">
+                <Picture src={g.data.image} alt={g.data.imageAlt} formats={['avif', 'webp']} widths={[400, 640, 800]} sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+              </div>
+              <p class="mt-5 text-sm font-medium text-petroleo-600">{g.data.category} · <time datetime={g.data.published.toISOString()}>{fmt.format(g.data.published)}</time></p>
+              <h2 class="mt-2 text-xl leading-snug font-semibold">
+                <a href={`/guias/${g.id}/`} class="after:absolute after:inset-0">{g.data.title}</a>
+              </h2>
+              <p class="mt-2 line-clamp-3 leading-relaxed text-grafito/70">{g.data.description}</p>
+            </article>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>

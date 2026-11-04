@@ -1,0 +1,17 @@
+---
+/**
+ * Motivo «Cristal» del logo: panel de vidrio + lámina de película superpuestos.
+ * Siempre se posiciona en absoluto: pasa top/left/right/bottom y tamaño (size-*) en `class`.
+ */
+interface Props { class?: string; tone?: 'dark' | 'light' }
+const { class: className = '', tone = 'dark' } = Astro.props;
+---
+
+<div aria-hidden="true" class:list={['pointer-events-none absolute', className]}>
+  <div class:list={['absolute top-0 left-0 h-[62%] w-[62%] overflow-hidden rounded-[18%] border backdrop-blur-sm', tone === 'dark' ? 'border-white/15 bg-acero/10' : 'border-petroleo-900/10 bg-acero/40']}>
+    <div class="absolute top-[14%] -left-[10%] h-[3%] w-[60%] -rotate-45 rounded-full bg-white/30"></div>
+    <div class="absolute top-[26%] -left-[12%] h-[1.5%] w-[60%] -rotate-45 rounded-full bg-white/20"></div>
+  </div>
+  <div class:list={['absolute right-0 bottom-0 h-[62%] w-[62%] rounded-[18%] border', tone === 'dark' ? 'border-ambar-400/30 bg-ambar-400/12' : 'border-ambar-400/40 bg-ambar-400/25']}></div>
+  <div class:list={['absolute top-[38%] left-[38%] h-[24%] w-[24%] rounded-[12%]', tone === 'dark' ? 'bg-petroleo-900/70' : 'bg-petroleo-900']}></div>
+</div>

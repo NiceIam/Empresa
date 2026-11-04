@@ -1,0 +1,71 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import Icon from '@/components/ui/Icon.astro';
+import FaqList from '@/components/ui/FaqList.astro';
+import CtaBand from '@/components/sections/CtaBand.astro';
+import { categories } from '@/data/catalog';
+import { generalFaqs } from '@/data/solutions';
+import { whatsappUrl } from '@/config/site';
+import { faqSchema } from '@/lib/schema';
+
+const groups = [
+  { id: 'general', title: 'Generales', icon: 'info' as const, faqs: generalFaqs },
+  ...categories.map((c) => ({ id: c.slug, title: c.short, icon: c.icon, faqs: c.faqs })),
+];
+const all = groups.flatMap((g) => g.faqs);
+const breadcrumbs = [
+  { name: 'Inicio', href: '/' },
+  { name: 'Preguntas frecuentes', href: '/preguntas-frecuentes/' },
+];
+---
+
+<BaseLayout
+  title="Preguntas frecuentes sobre películas para vidrio"
+  description="Resolvemos las dudas más comunes sobre películas para vidrio: duración, instalación, limpieza, garantía, polarizado, seguridad, esmerilado y sandblasting."
+  breadcrumbs={breadcrumbs}
+  schema={[faqSchema(all)]}
+>
+  <PageHero
+    eyebrow="Centro de ayuda"
+    title={'Preguntas <span class="text-ambar-300">frecuentes</span>'}
+    lead="Si no encuentras tu respuesta aquí, escríbenos por WhatsApp. Un asesor te responde en minutos en horario laboral."
+    breadcrumbs={breadcrumbs}
+    size="sm"
+  />
+
+  <section class="py-16 lg:py-24">
+    <div class="container-page grid gap-12 lg:grid-cols-[15rem_1fr] lg:gap-16">
+      <nav aria-label="Temas" class="lg:sticky lg:top-28 lg:self-start">
+        <ul class="-mx-5 flex gap-2 overflow-x-auto px-5 [scrollbar-width:none] sm:mx-0 sm:px-0 lg:flex-col lg:overflow-visible">
+          {
+            groups.map((g) => (
+              <li class="shrink-0">
+                <a href={`#${g.id}`} class="flex items-center gap-3 rounded-full border border-petroleo-900/10 bg-white px-4 py-2.5 text-sm font-semibold text-petroleo-900 transition hover:border-petroleo-900/40 lg:rounded-2xl">
+                  <Icon name={g.icon} class="size-4 text-petroleo-500" />{g.title}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+        <a href={whatsappUrl('Hola Maven Films, tengo una pregunta.')} target="_blank" rel="noopener" class="btn btn-dark mt-6 hidden w-full text-sm lg:inline-flex"><Icon name="whatsapp" class="size-4" /> Hacer una pregunta</a>
+      </nav>
+
+      <div class="space-y-16">
+        {
+          groups.map((g) => (
+            <section id={g.id} aria-labelledby={`t-${g.id}`} class="scroll-mt-28">
+              <h2 id={`t-${g.id}`} class="flex items-center gap-3 text-2xl font-semibold sm:text-3xl">
+                <span class="grid size-10 place-items-center rounded-xl bg-petroleo-900 text-ambar-300"><Icon name={g.icon} class="size-5" /></span>
+                {g.title}
+              </h2>
+              <FaqList faqs={g.faqs} class="mt-6" group={`faq-${g.id}`} />
+            </section>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CtaBand />
+</BaseLayout>

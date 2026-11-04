@@ -1,0 +1,155 @@
+---
+/**
+ * Íconos del sitio. Lucide para UI; Simple Icons para marcas sociales.
+ * Uso: <Icon name="sun" class="size-5" />
+ */
+import Sun from '@lucide/astro/icons/sun';
+import ThermometerSun from '@lucide/astro/icons/thermometer-sun';
+import ShieldCheck from '@lucide/astro/icons/shield-check';
+import Shield from '@lucide/astro/icons/shield';
+import EyeOff from '@lucide/astro/icons/eye-off';
+import Sparkles from '@lucide/astro/icons/sparkles';
+import ScanEye from '@lucide/astro/icons/scan-eye';
+import Building from '@lucide/astro/icons/building';
+import House from '@lucide/astro/icons/house';
+import Store from '@lucide/astro/icons/store';
+import Ruler from '@lucide/astro/icons/ruler';
+import Wrench from '@lucide/astro/icons/wrench';
+import BadgeCheck from '@lucide/astro/icons/badge-check';
+import MessageCircle from '@lucide/astro/icons/message-circle';
+import Phone from '@lucide/astro/icons/phone';
+import Mail from '@lucide/astro/icons/mail';
+import MapPin from '@lucide/astro/icons/map-pin';
+import Clock from '@lucide/astro/icons/clock';
+import ArrowRight from '@lucide/astro/icons/arrow-right';
+import ArrowUpRight from '@lucide/astro/icons/arrow-up-right';
+import ArrowLeft from '@lucide/astro/icons/arrow-left';
+import Check from '@lucide/astro/icons/check';
+import ChevronDown from '@lucide/astro/icons/chevron-down';
+import ChevronRight from '@lucide/astro/icons/chevron-right';
+import Menu from '@lucide/astro/icons/menu';
+import X from '@lucide/astro/icons/x';
+import Layers from '@lucide/astro/icons/layers';
+import Zap from '@lucide/astro/icons/zap';
+import Leaf from '@lucide/astro/icons/leaf';
+import Wifi from '@lucide/astro/icons/wifi';
+import Palette from '@lucide/astro/icons/palette';
+import Scissors from '@lucide/astro/icons/scissors';
+import Printer from '@lucide/astro/icons/printer';
+import Blinds from '@lucide/astro/icons/blinds';
+import Hammer from '@lucide/astro/icons/hammer';
+import Gem from '@lucide/astro/icons/gem';
+import CalendarCheck from '@lucide/astro/icons/calendar-check';
+import ClipboardCheck from '@lucide/astro/icons/clipboard-check';
+import Users from '@lucide/astro/icons/users';
+import Info from '@lucide/astro/icons/info';
+import FileText from '@lucide/astro/icons/file-text';
+import Award from '@lucide/astro/icons/award';
+import Timer from '@lucide/astro/icons/timer';
+import Frame from '@lucide/astro/icons/frame';
+import SunMedium from '@lucide/astro/icons/sun-medium';
+import Paintbrush from '@lucide/astro/icons/paintbrush';
+import SquareStack from '@lucide/astro/icons/square-stack';
+import Droplets from '@lucide/astro/icons/droplets';
+import Clock3 from '@lucide/astro/icons/clock-3';
+import Send from '@lucide/astro/icons/send';
+import Lightbulb from '@lucide/astro/icons/lightbulb';
+import RotateCcw from '@lucide/astro/icons/rotate-ccw';
+import Star from '@lucide/astro/icons/star';
+import { siInstagram, siFacebook, siTiktok, siYoutube, siPinterest, siGoogle, siWhatsapp } from 'simple-icons';
+
+const lucide = {
+  sun: Sun,
+  'thermometer-sun': ThermometerSun,
+  'shield-check': ShieldCheck,
+  shield: Shield,
+  'eye-off': EyeOff,
+  sparkles: Sparkles,
+  'scan-eye': ScanEye,
+  building: Building,
+  house: House,
+  store: Store,
+  ruler: Ruler,
+  wrench: Wrench,
+  'badge-check': BadgeCheck,
+  'message-circle': MessageCircle,
+  phone: Phone,
+  mail: Mail,
+  'map-pin': MapPin,
+  clock: Clock,
+  'clock-3': Clock3,
+  'arrow-right': ArrowRight,
+  'arrow-up-right': ArrowUpRight,
+  'arrow-left': ArrowLeft,
+  check: Check,
+  'chevron-down': ChevronDown,
+  'chevron-right': ChevronRight,
+  menu: Menu,
+  x: X,
+  layers: Layers,
+  zap: Zap,
+  leaf: Leaf,
+  wifi: Wifi,
+  palette: Palette,
+  scissors: Scissors,
+  printer: Printer,
+  blinds: Blinds,
+  hammer: Hammer,
+  gem: Gem,
+  'calendar-check': CalendarCheck,
+  'clipboard-check': ClipboardCheck,
+  users: Users,
+  info: Info,
+  'file-text': FileText,
+  award: Award,
+  timer: Timer,
+  frame: Frame,
+  'sun-medium': SunMedium,
+  paintbrush: Paintbrush,
+  'square-stack': SquareStack,
+  droplets: Droplets,
+  send: Send,
+  lightbulb: Lightbulb,
+  'rotate-ccw': RotateCcw,
+  star: Star,
+} as const;
+
+const brands = {
+  instagram: siInstagram,
+  facebook: siFacebook,
+  tiktok: siTiktok,
+  youtube: siYoutube,
+  pinterest: siPinterest,
+  googleBusiness: siGoogle,
+  whatsapp: siWhatsapp,
+} as const;
+
+// LinkedIn fue retirado de Simple Icons; se dibuja aquí.
+const linkedinPath =
+  'M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.64-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.73v20.54C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.73V1.73C24 .77 23.2 0 22.22 0z';
+
+export type IconName = keyof typeof lucide | keyof typeof brands | 'linkedin';
+
+interface Props {
+  name: IconName;
+  class?: string;
+  strokeWidth?: number;
+  label?: string;
+}
+
+const { name, class: className = 'size-5', strokeWidth = 1.75, label } = Astro.props;
+const a11y = label ? { role: 'img', 'aria-label': label } : { 'aria-hidden': 'true' as const };
+const LucideIcon = (lucide as Record<string, any>)[name];
+const brand = (brands as Record<string, { path: string }>)[name];
+const brandPath = name === 'linkedin' ? linkedinPath : brand?.path;
+---
+
+{
+  LucideIcon ? (
+    <LucideIcon class={className} stroke-width={strokeWidth} {...a11y} />
+  ) : brandPath ? (
+    <svg class={className} viewBox="0 0 24 24" fill="currentColor" {...a11y}>
+      <path d={brandPath} />
+    </svg>
+  ) : null
+}

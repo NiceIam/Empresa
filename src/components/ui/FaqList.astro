@@ -1,0 +1,40 @@
+---
+import Icon from '@/components/ui/Icon.astro';
+import type { Faq } from '@/data/catalog';
+interface Props { faqs: Faq[]; class?: string; group?: string }
+const { faqs, class: className = '', group = 'faq' } = Astro.props;
+---
+
+<div class:list={['divide-y divide-petroleo-900/10 border-y border-petroleo-900/10', className]}>
+  {
+    faqs.map((f, i) => (
+      <details class="faq group" name={group} open={i === 0}>
+        <summary class="flex items-start justify-between gap-6 py-6 text-left">
+          <h3 class="font-display text-lg leading-snug font-semibold text-petroleo-900 transition group-hover:text-petroleo-600 sm:text-xl">{f.q}</h3>
+          <span class="mt-0.5 grid size-8 shrink-0 place-items-center rounded-full border border-petroleo-900/15 text-petroleo-900 transition-all duration-500 ease-out-expo group-open:rotate-45 group-open:border-ambar-400 group-open:bg-ambar-400">
+            <Icon name="x" class="size-4 rotate-45" />
+          </span>
+        </summary>
+        <p class="max-w-3xl pb-7 text-[1.0625rem] leading-relaxed text-grafito/80">{f.a}</p>
+      </details>
+    ))
+  }
+</div>
+
+<style>
+  @supports (interpolate-size: allow-keywords) {
+    .faq {
+      interpolate-size: allow-keywords;
+    }
+    .faq::details-content {
+      height: 0;
+      overflow: clip;
+      transition:
+        height 0.5s var(--ease-out-expo),
+        content-visibility 0.5s allow-discrete;
+    }
+    .faq[open]::details-content {
+      height: auto;
+    }
+  }
+</style>

@@ -1,0 +1,22 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Icon from '@/components/ui/Icon.astro';
+import { whatsappUrl } from '@/config/site';
+---
+
+<BaseLayout title="¡Gracias! Recibimos tu solicitud" description="Tu solicitud de cotización fue recibida. Un asesor de Maven Films te contactará pronto." noindex>
+  <section class="relative isolate grid min-h-[80dvh] place-items-center overflow-hidden bg-petroleo-950 px-5 pt-28 pb-20 text-center text-white">
+    <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_60%_50%_at_50%_30%,rgb(47_99_118_/_0.5),transparent_70%)]"></div>
+    <div class="max-w-xl">
+      <div class="mx-auto grid size-20 place-items-center rounded-full bg-ambar-400 text-petroleo-950">
+        <Icon name="check" class="size-10" strokeWidth={2.5} />
+      </div>
+      <h1 class="mt-8 text-4xl font-semibold !text-white sm:text-5xl">¡Recibimos tu solicitud!</h1>
+      <p class="mt-5 text-lg leading-relaxed text-white/75">Un asesor te contactará en menos de un día hábil. Si quieres agilizar, envíanos fotos de tus vidrios por WhatsApp.</p>
+      <div class="mt-10 flex flex-wrap justify-center gap-3">
+        <a href={whatsappUrl('Hola Maven Films, acabo de enviar una solicitud desde la web. Les comparto fotos de mis vidrios.')} target="_blank" rel="noopener" class="btn btn-primary"><Icon name="whatsapp" class="size-4" /> Enviar fotos</a>
+        <a href="/guias/" class="btn btn-ghost-light">Mientras tanto, lee nuestras guías</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

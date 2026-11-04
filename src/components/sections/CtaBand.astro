@@ -1,0 +1,37 @@
+---
+import { Picture } from 'astro:assets';
+import Icon from '@/components/ui/Icon.astro';
+import GlassMotif from '@/components/ui/GlassMotif.astro';
+import { whatsappUrl } from '@/config/site';
+import fachada from '@/assets/images/fachada-azul.jpg';
+
+interface Props { title?: string; text?: string; whatsappMessage?: string }
+const {
+  title = 'Agenda tu visita técnica <span class="text-ambar-300">sin costo</span>',
+  text = 'Llevamos muestras reales a tu espacio, medimos y te entregamos una propuesta clara. Sin compromiso.',
+  whatsappMessage,
+} = Astro.props;
+---
+
+<section class="container-page py-20 lg:py-28">
+  <div class="relative isolate overflow-hidden rounded-[2rem] bg-petroleo-900 px-6 py-14 sm:px-12 lg:px-16 lg:py-20" data-reveal>
+    <Picture
+      src={fachada}
+      alt=""
+      formats={['avif', 'webp']}
+      widths={[800, 1400]}
+      sizes="(min-width: 1280px) 1200px, 100vw"
+      class="absolute inset-0 -z-20 h-full w-full object-cover opacity-30 mix-blend-luminosity"
+    />
+    <div class="absolute inset-0 -z-10 bg-gradient-to-r from-petroleo-950 via-petroleo-900/90 to-petroleo-900/50"></div>
+    <GlassMotif class="absolute top-1/2 right-12 hidden size-64 -translate-y-1/2 lg:block" />
+    <div class="max-w-2xl">
+      <h2 class="text-3xl leading-tight font-semibold !text-white sm:text-[2.75rem]" set:html={title} />
+      <p class="mt-5 text-lg leading-relaxed text-white/75">{text}</p>
+      <div class="mt-9 flex flex-wrap gap-3">
+        <a href="/contacto/" class="btn btn-primary">Solicitar cotización <Icon name="arrow-right" class="size-4" /></a>
+        <a href={whatsappUrl(whatsappMessage)} target="_blank" rel="noopener" class="btn btn-ghost-light"><Icon name="whatsapp" class="size-4" /> Escribir por WhatsApp</a>
+      </div>
+    </div>
+  </div>
+</section>

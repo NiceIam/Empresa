@@ -1,0 +1,94 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import Icon from '@/components/ui/Icon.astro';
+import ProductCard from '@/components/ui/ProductCard.astro';
+import Advisor from '@/components/sections/Advisor.astro';
+import CtaBand from '@/components/sections/CtaBand.astro';
+import { categories, products, categoryUrl, productUrl } from '@/data/catalog';
+import { itemListSchema } from '@/lib/schema';
+import fachadaGeometrica from '@/assets/images/fachada-geometrica-wide.jpg';
+
+const breadcrumbs = [
+  { name: 'Inicio', href: '/' },
+  { name: 'Películas', href: '/peliculas/' },
+];
+const lines = categories.filter((c) => c.slug !== 'sandblasting');
+---
+
+<BaseLayout
+  title="Catálogo de películas para vidrio y polarizado"
+  description="Catálogo de películas para vidrio: polarizado convencional y nanocerámico, espejo, seguridad 4 y 8 mil, esmerilado, opalizado, vinilo y microperforado."
+  image={fachadaGeometrica}
+  imageAlt="Fachada de edificio con vidrios reflectivos"
+  breadcrumbs={breadcrumbs}
+  schema={[itemListSchema('Catálogo de películas para vidrio', products.map((p) => ({ name: p.name, url: productUrl(p) })))]}
+>
+  <PageHero
+    eyebrow="Catálogo"
+    title={'Todas nuestras <span class="text-ambar-300">películas para vidrio</span>'}
+    lead="Trece referencias en cuatro líneas. Filtra por lo que necesitas o usa el asesor para recibir una recomendación."
+    image={fachadaGeometrica}
+    imageAlt="Fachada de edificio con vidrios reflectivos"
+    breadcrumbs={breadcrumbs}
+  />
+
+  <!-- Filtro por línea -->
+  <div class="sticky top-[4.5rem] z-30 border-b border-petroleo-900/10 bg-blanco-roto/85 backdrop-blur-xl lg:top-20">
+    <div class="container-page">
+      <div class="-mx-5 flex gap-2 overflow-x-auto px-5 py-4 [scrollbar-width:none] sm:mx-0 sm:px-0" role="toolbar" aria-label="Filtrar por línea">
+        <button type="button" class="filter-btn shrink-0 rounded-full border border-petroleo-900/15 px-5 py-2 text-sm font-semibold transition aria-pressed:border-petroleo-900 aria-pressed:bg-petroleo-900 aria-pressed:text-white" aria-pressed="true" data-filter="all">
+          Todas <span class="ml-1 opacity-60">{products.length}</span>
+        </button>
+        {
+          lines.map((c) => (
+            <button type="button" class="filter-btn inline-flex shrink-0 items-center gap-2 rounded-full border border-petroleo-900/15 px-5 py-2 text-sm font-semibold transition hover:border-petroleo-900/40 aria-pressed:border-petroleo-900 aria-pressed:bg-petroleo-900 aria-pressed:text-white" aria-pressed="false" data-filter={c.slug}>
+              <Icon name={c.icon} class="size-4" />{c.short}
+            </button>
+          ))
+        }
+        <a href={categoryUrl('sandblasting')} class="inline-flex shrink-0 items-center gap-2 rounded-full border border-petroleo-900/15 px-5 py-2 text-sm font-semibold transition hover:border-petroleo-900/40">
+          <Icon name="sparkles" class="size-4" />Sandblasting <Icon name="arrow-up-right" class="size-3.5" />
+        </a>
+      </div>
+    </div>
+  </div>
+
+  {
+    lines.map((c) => (
+      <section class="catalog-group py-16 first-of-type:pt-20" data-group={c.slug} aria-labelledby={`h-${c.slug}`}>
+        <div class="container-page">
+          <div class="flex flex-col justify-between gap-4 sm:flex-row sm:items-end">
+            <div>
+              <p class="eyebrow">{c.eyebrow}</p>
+              <h2 id={`h-${c.slug}`} class="mt-3 text-3xl font-semibold sm:text-4xl">{c.name}</h2>
+            </div>
+            <a href={categoryUrl(c.slug)} class="inline-flex items-center gap-2 font-display text-sm font-semibold text-petroleo-700 hover:text-petroleo-900">
+              Ver línea completa <Icon name="arrow-right" class="size-4" />
+            </a>
+          </div>
+          <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            {products.filter((p) => p.category === c.slug).map((p, i) => <ProductCard product={p} delay={i * 60} />)}
+          </div>
+        </div>
+      </section>
+    ))
+  }
+
+  <Advisor />
+  <CtaBand />
+</BaseLayout>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.filter-btn');
+  const groups = document.querySelectorAll<HTMLElement>('.catalog-group');
+  buttons.forEach((btn) =>
+    btn.addEventListener('click', () => {
+      const f = btn.dataset.filter!;
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      const run = () => groups.forEach((g) => (g.hidden = f !== 'all' && g.dataset.group !== f));
+      // Transición suave entre filtros cuando el navegador lo soporta.
+      (document as any).startViewTransition ? (document as any).startViewTransition(run) : run();
+    }),
+  );
+</script>

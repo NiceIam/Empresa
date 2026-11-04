@@ -1,0 +1,148 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { Picture, getImage } from 'astro:assets';
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import Breadcrumbs from '@/components/ui/Breadcrumbs.astro';
+import Icon from '@/components/ui/Icon.astro';
+import ProductCard from '@/components/ui/ProductCard.astro';
+import FaqList from '@/components/ui/FaqList.astro';
+import CtaBand from '@/components/sections/CtaBand.astro';
+import { products } from '@/data/catalog';
+import { site, whatsappUrl } from '@/config/site';
+import { articleSchema, faqSchema, abs } from '@/lib/schema';
+
+export const getStaticPaths = (async () => {
+  const guides = await getCollection('guias');
+  return guides.map((g) => ({ params: { slug: g.id }, props: { guide: g } }));
+}) satisfies GetStaticPaths;
+
+interface Props { guide: CollectionEntry<'guias'> }
+const { guide } = Astro.props;
+const { Content, headings } = await render(guide);
+const d = guide.data;
+const url = `/guias/${guide.id}/`;
+const toc = headings.filter((h) => h.depth === 2);
+const related = d.related.map((s) => products.find((p) => p.slug === s)).filter((p): p is NonNullable<typeof p> => Boolean(p));
+const ogImg = await getImage({ src: d.image, width: 1200, height: 630, fit: 'cover', format: 'jpg', quality: 80 });
+const fmt = new Intl.DateTimeFormat('es-CO', { day: 'numeric', month: 'long', year: 'numeric' });
+const others = (await getCollection('guias')).filter((g) => g.id !== guide.id).slice(0, 3);
+
+const breadcrumbs = [
+  { name: 'Inicio', href: '/' },
+  { name: 'Guías', href: '/guias/' },
+  { name: d.title, href: url },
+];
+---
+
+<BaseLayout
+  title={d.seoTitle ?? d.title}
+  description={d.description}
+  image={d.image}
+  imageAlt={d.imageAlt}
+  type="article"
+  article={{ published: d.published, updated: d.updated, section: d.category }}
+  breadcrumbs={breadcrumbs}
+  schema={[
+    articleSchema({ title: d.title, description: d.description, url, image: abs(ogImg.src), published: d.published, updated: d.updated }),
+    ...(d.faqs.length ? [faqSchema(d.faqs)] : []),
+  ]}
+>
+  <article>
+    <header class="relative isolate overflow-hidden bg-petroleo-950 pt-32 pb-16 text-white lg:pt-40">
+      <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_60%_60%_at_80%_0%,rgb(47_99_118_/_0.4),transparent_70%)]"></div>
+      <div class="container-page max-w-4xl">
+        <Breadcrumbs items={breadcrumbs.slice(0, 2)} class="mb-8" />
+        <p class="eyebrow eyebrow-light">{d.category}</p>
+        <h1 class="mt-5 text-4xl leading-[1.1] font-semibold !text-white sm:text-5xl">{d.title}</h1>
+        <p class="mt-6 text-lg leading-relaxed text-white/75">{d.description}</p>
+        <div class="mt-8 flex flex-wrap items-center gap-x-6 gap-y-2 text-sm text-white/60">
+          <span class="flex items-center gap-2"><img src="/brand/maven-films-simbolo-reverso.svg" alt="" width="20" height="20" class="size-5" /> Equipo técnico {site.name}</span>
+          <span><time datetime={d.published.toISOString()}>{fmt.format(d.published)}</time></span>
+          {d.updated && <span>Actualizado: <time datetime={d.updated.toISOString()}>{fmt.format(d.updated)}</time></span>}
+          <span class="flex items-center gap-1.5"><Icon name="clock" class="size-4" />{d.readingTime} min de lectura</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="container-page max-w-5xl">
+      <div class="-mt-2 aspect-[16/8] overflow-hidden rounded-b-[2rem] shadow-[var(--shadow-card)] sm:rounded-[2rem] sm:-mt-0 sm:translate-y-[-1px]">
+        <Picture src={d.image} alt={d.imageAlt} formats={['avif', 'webp']} widths={[640, 960, 1280, 1600]} sizes="(min-width: 1024px) 1000px, 100vw" loading="eager" fetchpriority="high" class="h-full w-full object-cover" />
+      </div>
+    </div>
+
+    <div class="container-page grid gap-12 py-16 lg:grid-cols-[1fr_17rem] lg:gap-16 lg:py-20">
+      <div class="prose-maven min-w-0">
+        <Content />
+      </div>
+
+      <aside class="space-y-6 lg:sticky lg:top-28 lg:self-start">
+        {
+          toc.length > 2 && (
+            <nav aria-label="En esta guía" class="rounded-3xl border border-petroleo-900/10 bg-white p-6">
+              <p class="font-display text-sm font-semibold text-petroleo-900">En esta guía</p>
+              <ol class="mt-4 space-y-2.5 text-sm">
+                {toc.map((h) => (
+                  <li><a href={`#${h.slug}`} class="toc-link block border-l-2 border-transparent pl-3 text-grafito/65 transition hover:border-ambar-400 hover:text-petroleo-900">{h.text}</a></li>
+                ))}
+              </ol>
+            </nav>
+          )
+        }
+        <div class="rounded-3xl bg-petroleo-900 p-6 text-white">
+          <p class="font-display text-lg leading-snug font-semibold">¿Quieres una recomendación para tu caso?</p>
+          <p class="mt-2 text-sm leading-relaxed text-white/70">Envíanos fotos de tus vidrios y te orientamos sin costo.</p>
+          <a href={whatsappUrl(`Hola Maven Films, leí la guía "${d.title}" y quiero asesoría.`)} target="_blank" rel="noopener" class="btn btn-primary mt-5 w-full !px-4 text-sm"><Icon name="whatsapp" class="size-4" /> Escribir por WhatsApp</a>
+        </div>
+      </aside>
+    </div>
+  </article>
+
+  {
+    d.faqs.length > 0 && (
+      <section class="bg-white py-20">
+        <div class="container-page max-w-4xl">
+          <h2 class="text-3xl font-semibold">Preguntas frecuentes</h2>
+          <FaqList faqs={d.faqs} class="mt-8" />
+        </div>
+      </section>
+    )
+  }
+
+  {
+    related.length > 0 && (
+      <section class="py-20">
+        <div class="container-page">
+          <p class="eyebrow">Películas mencionadas</p>
+          <h2 class="mt-4 text-3xl font-semibold">Productos relacionados</h2>
+          <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            {related.map((p, i) => <ProductCard product={p} delay={i * 80} />)}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    others.length > 0 && (
+      <section class="border-t border-petroleo-900/10 py-16">
+        <div class="container-page">
+          <p class="eyebrow">Sigue leyendo</p>
+          <ul class="mt-6 grid gap-4 md:grid-cols-3">
+            {others.map((g) => (
+              <li>
+                <a href={`/guias/${g.id}/`} class="group flex h-full flex-col rounded-2xl border border-petroleo-900/10 bg-white p-6 transition hover:border-petroleo-900/30 hover:shadow-[var(--shadow-card)]">
+                  <span class="text-sm text-petroleo-600">{g.data.category}</span>
+                  <span class="mt-2 flex-1 font-display text-lg leading-snug font-semibold text-petroleo-900">{g.data.title}</span>
+                  <Icon name="arrow-right" class="mt-4 size-4 text-grafito/40 transition group-hover:translate-x-1 group-hover:text-petroleo-900" />
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  <CtaBand />
+</BaseLayout>

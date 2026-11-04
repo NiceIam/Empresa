@@ -1,0 +1,114 @@
+---
+import Icon from '@/components/ui/Icon.astro';
+import { site, activeSocial, whatsappUrl } from '@/config/site';
+import { categories, categoryUrl, products, productUrl } from '@/data/catalog';
+import { solutions } from '@/data/solutions';
+
+const year = new Date().getFullYear();
+const topProducts = ['polarizado-nanoceramico', 'seguridad-transparente-8-mil', 'frosted-esmerilado', 'nanoceramica-mkr70', 'microperforada', 'pelicula-reflectiva-espejo']
+  .map((slug) => products.find((p) => p.slug === slug)!)
+  .filter(Boolean);
+---
+
+<footer class="relative overflow-hidden bg-petroleo-950 text-white/70">
+  <div class="pointer-events-none absolute inset-0 bg-grain opacity-[0.04]"></div>
+  <!-- Motivo «Cristal»: dos paneles superpuestos -->
+  <div aria-hidden="true" class="pointer-events-none absolute -top-40 -right-32 hidden lg:block">
+    <div class="relative size-[28rem]">
+      <div class="absolute top-0 left-0 size-72 rounded-[2.5rem] border border-white/10 bg-acero/5"></div>
+      <div class="absolute right-0 bottom-0 size-72 rounded-[2.5rem] border border-ambar-400/20 bg-ambar-400/5"></div>
+    </div>
+  </div>
+
+  <div class="container-page relative">
+    <!-- CTA superior -->
+    <div class="flex flex-col items-start justify-between gap-8 border-b border-white/10 py-16 lg:flex-row lg:items-center">
+      <div class="max-w-2xl">
+        <p class="eyebrow eyebrow-light">Asesoría sin costo</p>
+        <p class="mt-4 font-display text-3xl leading-tight font-semibold tracking-tight text-white sm:text-4xl">
+          Cuéntanos qué pasa con tus vidrios. <span class="text-ambar-300">Te decimos qué película lo resuelve.</span>
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-3">
+        <a href="/contacto/" class="btn btn-primary">Solicitar cotización <Icon name="arrow-right" class="size-4" /></a>
+        <a href={whatsappUrl()} target="_blank" rel="noopener" class="btn btn-ghost-light"><Icon name="whatsapp" class="size-4" /> WhatsApp</a>
+      </div>
+    </div>
+
+    <div class="grid gap-12 py-16 sm:grid-cols-2 lg:grid-cols-12">
+      <div class="lg:col-span-4">
+        <a href="/" aria-label={`${site.name} — inicio`}>
+          <img src="/brand/maven-films-horizontal-reverso.svg" alt={site.name} width="808" height="188" class="h-9 w-auto" loading="lazy" />
+        </a>
+        <p class="mt-6 max-w-sm text-[0.95rem] leading-relaxed">
+          {site.legalName} Películas para vidrio de control solar, seguridad, decorativas y sandblasting. Asesoría técnica e instalación profesional en {site.address.locality} y la Sabana.
+        </p>
+        {
+          activeSocial.length > 0 && (
+            <ul class="mt-8 flex flex-wrap gap-2" aria-label="Redes sociales">
+              {activeSocial.map((s) => (
+                <li>
+                  <a href={s.url} target="_blank" rel="noopener me" class="grid size-11 place-items-center rounded-full border border-white/12 text-white/80 transition hover:border-ambar-400 hover:bg-ambar-400 hover:text-petroleo-950" aria-label={`${site.name} en ${s.label}`}>
+                    <Icon name={s.network} class="size-[1.1rem]" />
+                  </a>
+                </li>
+              ))}
+            </ul>
+          )
+        }
+      </div>
+
+      <nav aria-label="Líneas de producto" class="lg:col-span-2">
+        <p class="font-display text-sm font-semibold tracking-wide text-white">Películas</p>
+        <ul class="mt-5 space-y-3 text-[0.95rem]">
+          {categories.map((c) => <li><a href={categoryUrl(c.slug)} class="link-underline hover:text-white">{c.short}</a></li>)}
+          <li><a href="/peliculas/" class="link-underline hover:text-white">Catálogo completo</a></li>
+        </ul>
+      </nav>
+
+      <nav aria-label="Productos destacados" class="lg:col-span-3">
+        <p class="font-display text-sm font-semibold tracking-wide text-white">Más buscadas</p>
+        <ul class="mt-5 space-y-3 text-[0.95rem]">
+          {topProducts.map((p) => <li><a href={productUrl(p)} class="link-underline hover:text-white">{p.name}</a></li>)}
+        </ul>
+      </nav>
+
+      <div class="lg:col-span-3">
+        <p class="font-display text-sm font-semibold tracking-wide text-white">Contacto</p>
+        <ul class="mt-5 space-y-4 text-[0.95rem]">
+          <li>
+            <a href={whatsappUrl()} target="_blank" rel="noopener" class="flex items-start gap-3 hover:text-white">
+              <Icon name="whatsapp" class="mt-0.5 size-4 shrink-0 text-ambar-400" />{site.contact.phoneDisplay}
+            </a>
+          </li>
+          <li>
+            <a href={`mailto:${site.contact.email}`} class="flex items-start gap-3 break-all hover:text-white">
+              <Icon name="mail" class="mt-0.5 size-4 shrink-0 text-ambar-400" />{site.contact.email}
+            </a>
+          </li>
+          <li class="flex items-start gap-3">
+            <Icon name="map-pin" class="mt-0.5 size-4 shrink-0 text-ambar-400" />
+            <span>{site.address.street && <>{site.address.street}, </>}{site.address.locality}, {site.address.countryName}</span>
+          </li>
+          <li class="flex items-start gap-3">
+            <Icon name="clock" class="mt-0.5 size-4 shrink-0 text-ambar-400" />
+            <span>{site.hours.map((h) => <span class="block">{h.days}: {h.open} – {h.close}</span>)}</span>
+          </li>
+        </ul>
+        <p class="mt-6 text-sm">
+          <span class="font-semibold text-white/85">Soluciones:</span>{' '}
+          {solutions.map((s, i) => <>{i > 0 && ' · '}<a href={`/soluciones/${s.slug}/`} class="link-underline hover:text-white">{s.name}</a></>)}
+        </p>
+      </div>
+    </div>
+
+    <div class="flex flex-col gap-4 border-t border-white/10 py-8 text-sm sm:flex-row sm:items-center sm:justify-between">
+      <p>© {year} {site.legalName}{site.nit && ` · NIT ${site.nit}.`} Todos los derechos reservados.</p>
+      <ul class="flex flex-wrap gap-x-6 gap-y-2">
+        <li><a href="/politica-de-privacidad/" class="link-underline hover:text-white">Política de tratamiento de datos</a></li>
+        <li><a href="/preguntas-frecuentes/" class="link-underline hover:text-white">Preguntas frecuentes</a></li>
+        <li><a href="/sitemap-index.xml" class="link-underline hover:text-white">Mapa del sitio</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>

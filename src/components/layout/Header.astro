@@ -1,0 +1,249 @@
+---
+import Icon from '@/components/ui/Icon.astro';
+import { site, whatsappUrl } from '@/config/site';
+import { categories, categoryUrl } from '@/data/catalog';
+import { solutions } from '@/data/solutions';
+
+const path = Astro.url.pathname;
+const isActive = (href: string) => path.startsWith(href);
+---
+
+<header
+  id="site-header"
+  data-scrolled="false"
+  class="group/header fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,backdrop-filter] duration-500 data-[scrolled=true]:bg-petroleo-950/85 data-[scrolled=true]:shadow-[0_10px_30px_-15px_rgb(0_0_0_/_0.5)] data-[scrolled=true]:backdrop-blur-xl"
+>
+  <div class="container-page flex h-[4.5rem] items-center justify-between gap-6 lg:h-20">
+    <a href="/" class="relative z-10 flex shrink-0 items-center" aria-label={`${site.name} — inicio`}>
+      <img src="/brand/maven-films-horizontal-reverso.svg" alt={site.name} width="808" height="188" class="h-8 w-auto lg:h-9" fetchpriority="high" />
+    </a>
+
+    <nav aria-label="Principal" class="hidden lg:block">
+      <ul class="flex items-center gap-1 text-[0.925rem] font-medium text-white/85">
+        <li class="nav-item relative">
+          <button
+            type="button"
+            class="nav-trigger flex items-center gap-1.5 rounded-full px-4 py-2 transition hover:bg-white/10 hover:text-white aria-expanded:bg-white/10 aria-expanded:text-white"
+            aria-expanded="false"
+            aria-controls="menu-peliculas"
+            data-active={isActive('/peliculas/') ? '' : undefined}
+          >
+            Películas <Icon name="chevron-down" class="size-4 transition-transform duration-300 [.nav-item:hover_&]:rotate-180" />
+          </button>
+          <div id="menu-peliculas" class="dropdown">
+            <div class="grid w-[min(52rem,90vw)] grid-cols-[1fr_1fr_15rem] gap-2 rounded-3xl border border-white/10 bg-petroleo-950/95 p-3 shadow-2xl backdrop-blur-2xl">
+              {
+                categories.map((c) => (
+                  <a href={categoryUrl(c.slug)} class="group flex gap-4 rounded-2xl p-4 transition hover:bg-white/6">
+                    <span class="grid size-11 shrink-0 place-items-center rounded-xl bg-ambar-400/15 text-ambar-300 ring-1 ring-ambar-400/25 transition group-hover:bg-ambar-400 group-hover:text-petroleo-950">
+                      <Icon name={c.icon} class="size-5" />
+                    </span>
+                    <span>
+                      <span class="block font-display font-semibold text-white">{c.short}</span>
+                      <span class="mt-1 block text-sm leading-snug text-white/60">{c.cardText}</span>
+                    </span>
+                  </a>
+                ))
+              }
+              <a href="/peliculas/" class="col-start-3 row-span-2 row-start-1 flex flex-col justify-between rounded-2xl bg-gradient-to-br from-ambar-400 to-ambar-500 p-5 text-petroleo-950 transition hover:brightness-105">
+                <span class="font-display text-lg leading-tight font-semibold">¿No sabes cuál elegir?</span>
+                <span class="text-sm leading-snug">Compara las 13 películas y usa nuestro asesor en línea.</span>
+                <span class="flex items-center gap-1.5 text-sm font-semibold">Ver catálogo <Icon name="arrow-right" class="size-4" /></span>
+              </a>
+            </div>
+          </div>
+        </li>
+        <li class="nav-item relative">
+          <button
+            type="button"
+            class="nav-trigger flex items-center gap-1.5 rounded-full px-4 py-2 transition hover:bg-white/10 hover:text-white aria-expanded:bg-white/10 aria-expanded:text-white"
+            aria-expanded="false"
+            aria-controls="menu-soluciones"
+          >
+            Soluciones <Icon name="chevron-down" class="size-4 transition-transform duration-300 [.nav-item:hover_&]:rotate-180" />
+          </button>
+          <div id="menu-soluciones" class="dropdown">
+            <div class="w-80 rounded-3xl border border-white/10 bg-petroleo-950/95 p-3 shadow-2xl backdrop-blur-2xl">
+              {
+                solutions.map((s) => (
+                  <a href={`/soluciones/${s.slug}/`} class="group flex items-center gap-4 rounded-2xl p-3 transition hover:bg-white/6">
+                    <span class="grid size-10 place-items-center rounded-xl bg-white/8 text-white/80 transition group-hover:bg-ambar-400 group-hover:text-petroleo-950">
+                      <Icon name={s.icon} class="size-5" />
+                    </span>
+                    <span class="font-display font-semibold text-white">{s.name}</span>
+                  </a>
+                ))
+              }
+            </div>
+          </div>
+        </li>
+        <li><a href="/guias/" class="rounded-full px-4 py-2 transition hover:bg-white/10 hover:text-white" aria-current={isActive('/guias/') ? 'page' : undefined}>Guías</a></li>
+        <li><a href="/nosotros/" class="rounded-full px-4 py-2 transition hover:bg-white/10 hover:text-white" aria-current={isActive('/nosotros/') ? 'page' : undefined}>Nosotros</a></li>
+        <li><a href="/preguntas-frecuentes/" class="rounded-full px-4 py-2 transition hover:bg-white/10 hover:text-white" aria-current={isActive('/preguntas-frecuentes/') ? 'page' : undefined}>FAQ</a></li>
+      </ul>
+    </nav>
+
+    <div class="flex items-center gap-2">
+      <a href={`tel:${site.contact.phone}`} class="hidden items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-white/80 transition hover:text-white xl:flex">
+        <Icon name="phone" class="size-4" />
+        {site.contact.phoneDisplay}
+      </a>
+      <a href="/contacto/" class="btn btn-primary hidden !px-5 !py-2.5 text-sm sm:inline-flex">Cotizar gratis</a>
+      <button
+        type="button"
+        id="menu-open"
+        class="grid size-11 place-items-center rounded-full text-white transition hover:bg-white/10 lg:hidden"
+        aria-label="Abrir menú"
+        aria-haspopup="dialog"
+        aria-controls="mobile-menu"
+      >
+        <Icon name="menu" class="size-6" />
+      </button>
+    </div>
+  </div>
+</header>
+
+<dialog id="mobile-menu" aria-label="Menú" class="mobile-menu m-0 h-dvh max-h-none w-full max-w-none bg-petroleo-950 p-0 text-white">
+  <div class="flex h-full flex-col overflow-y-auto">
+    <div class="container-page flex h-[4.5rem] shrink-0 items-center justify-between">
+      <img src="/brand/maven-films-horizontal-reverso.svg" alt={site.name} width="808" height="188" class="h-8 w-auto" />
+      <button type="button" id="menu-close" class="grid size-11 place-items-center rounded-full transition hover:bg-white/10" aria-label="Cerrar menú">
+        <Icon name="x" class="size-6" />
+      </button>
+    </div>
+    <nav aria-label="Menú móvil" class="container-page flex-1 pt-4 pb-10">
+      <p class="eyebrow eyebrow-light mb-3">Películas</p>
+      <ul class="grid gap-1">
+        {
+          categories.map((c, i) => (
+            <li class="menu-item" style={`--i:${i}`}>
+              <a href={categoryUrl(c.slug)} class="flex items-center gap-4 rounded-2xl py-3 text-2xl font-semibold tracking-tight font-display">
+                <span class="grid size-10 place-items-center rounded-xl bg-white/8 text-ambar-300">
+                  <Icon name={c.icon} class="size-5" />
+                </span>
+                {c.short}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+      <p class="eyebrow eyebrow-light mt-8 mb-3">Soluciones</p>
+      <ul class="grid gap-1 text-lg">
+        {solutions.map((s) => <li><a href={`/soluciones/${s.slug}/`} class="block py-2 text-white/85">{s.name}</a></li>)}
+      </ul>
+      <ul class="mt-6 grid gap-1 border-t border-white/10 pt-6 text-lg">
+        <li><a href="/peliculas/" class="block py-2 text-white/85">Catálogo completo</a></li>
+        <li><a href="/guias/" class="block py-2 text-white/85">Guías</a></li>
+        <li><a href="/nosotros/" class="block py-2 text-white/85">Nosotros</a></li>
+        <li><a href="/preguntas-frecuentes/" class="block py-2 text-white/85">Preguntas frecuentes</a></li>
+        <li><a href="/contacto/" class="block py-2 text-white/85">Contacto</a></li>
+      </ul>
+    </nav>
+    <div class="container-page sticky bottom-0 grid grid-cols-2 gap-3 border-t border-white/10 bg-petroleo-950 py-4">
+      <a href="/contacto/" class="btn btn-primary">Cotizar gratis</a>
+      <a href={whatsappUrl()} target="_blank" rel="noopener" class="btn btn-ghost-light"><Icon name="whatsapp" class="size-4" /> WhatsApp</a>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .dropdown {
+    position: absolute;
+    left: 50%;
+    top: 100%;
+    padding-top: 0.75rem;
+    opacity: 0;
+    visibility: hidden;
+    transform: translate(-50%, 8px);
+    transition:
+      opacity 0.25s var(--ease-out-expo),
+      transform 0.35s var(--ease-out-expo),
+      visibility 0.25s;
+  }
+  #menu-peliculas {
+    left: -1rem;
+    transform: translate(0, 8px);
+  }
+  /* Abre con hover (ratón) o con aria-expanded (clic/teclado). Escape lo cierra con data-closed. */
+  .nav-item:not([data-closed]):hover .dropdown,
+  .nav-trigger[aria-expanded='true'] + .dropdown {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, 0);
+  }
+  .nav-item:not([data-closed]):hover #menu-peliculas,
+  .nav-trigger[aria-expanded='true'] + #menu-peliculas {
+    transform: translate(0, 0);
+  }
+  .nav-trigger[data-active],
+  [aria-current='page'] {
+    color: white;
+  }
+
+  .mobile-menu::backdrop {
+    background: rgb(9 30 38 / 0.6);
+  }
+  .mobile-menu[open] {
+    animation: menu-in 0.45s var(--ease-out-expo);
+  }
+  .mobile-menu[open] .menu-item {
+    animation: item-in 0.6s var(--ease-out-expo) both;
+    animation-delay: calc(var(--i) * 50ms + 80ms);
+  }
+  @keyframes menu-in {
+    from { opacity: 0; transform: translateY(-12px); }
+  }
+  @keyframes item-in {
+    from { opacity: 0; transform: translateY(12px); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .mobile-menu[open],
+    .mobile-menu[open] .menu-item { animation: none; }
+  }
+</style>
+
+<script>
+  const header = document.getElementById('site-header')!;
+  const onScroll = () => header.setAttribute('data-scrolled', String(window.scrollY > 24));
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
+
+  // Desplegables de escritorio: hover para ratón; clic/Enter para teclado; Escape y salir con Tab cierran.
+  const triggers = document.querySelectorAll<HTMLButtonElement>('.nav-trigger');
+  const closeAll = () => triggers.forEach((b) => b.setAttribute('aria-expanded', 'false'));
+  triggers.forEach((btn) => {
+    const item = btn.closest<HTMLElement>('.nav-item')!;
+    btn.addEventListener('click', () => {
+      const open = btn.getAttribute('aria-expanded') === 'true';
+      closeAll();
+      item.removeAttribute('data-closed');
+      btn.setAttribute('aria-expanded', String(!open));
+    });
+    item.addEventListener('mouseenter', () => item.removeAttribute('data-closed'));
+    item.addEventListener('focusout', (e) => {
+      if (!item.contains(e.relatedTarget as Node | null)) btn.setAttribute('aria-expanded', 'false');
+    });
+  });
+  document.addEventListener('click', (e) => {
+    if (!(e.target as HTMLElement).closest('.nav-item')) closeAll();
+  });
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    const item = (document.activeElement as HTMLElement | null)?.closest<HTMLElement>('.nav-item') ?? document.querySelector<HTMLElement>('.nav-item:hover');
+    closeAll();
+    if (item) {
+      item.setAttribute('data-closed', '');
+      item.querySelector<HTMLButtonElement>('.nav-trigger')?.focus();
+    }
+  });
+
+  // Menú móvil con <dialog> nativo (trampa de foco y Escape incluidos).
+  const dialog = document.getElementById('mobile-menu') as HTMLDialogElement;
+  document.getElementById('menu-open')?.addEventListener('click', () => {
+    dialog.showModal();
+    document.body.style.overflow = 'hidden';
+  });
+  document.getElementById('menu-close')?.addEventListener('click', () => dialog.close());
+  dialog.addEventListener('close', () => (document.body.style.overflow = ''));
+  dialog.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => dialog.close()));
+</script>

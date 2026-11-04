@@ -1,0 +1,182 @@
+---
+import Icon from '@/components/ui/Icon.astro';
+import { categories } from '@/data/catalog';
+import { whatsappUrl } from '@/config/site';
+
+interface Props { defaultInterest?: string; compact?: boolean }
+const { defaultInterest, compact = false } = Astro.props;
+const fieldCls =
+  'peer w-full rounded-2xl border border-petroleo-900/15 bg-white px-4 pt-6 pb-2.5 text-[1rem] text-grafito outline-none transition placeholder:text-transparent focus:border-petroleo-700 focus:ring-4 focus:ring-petroleo-500/10 user-invalid:border-red-600';
+const labelCls =
+  'pointer-events-none absolute top-4 left-4 origin-left text-grafito/55 transition-all duration-200 peer-focus:top-2 peer-focus:text-xs peer-focus:text-petroleo-700 peer-[:not(:placeholder-shown)]:top-2 peer-[:not(:placeholder-shown)]:text-xs';
+---
+
+<!-- Sin JavaScript, el navegador valida de forma nativa; con JS se usa la validación propia (noValidate). -->
+<form id="quote-form" action="/api/contacto/" method="post" class="quote-form card p-6 sm:p-10">
+  <div class="grid gap-4 sm:grid-cols-2">
+    <div class="relative">
+      <input id="q-name" name="name" type="text" autocomplete="name" required minlength="2" maxlength="80" placeholder="Nombre" class={fieldCls} />
+      <label for="q-name" class={labelCls}>Nombre completo *</label>
+    </div>
+    <div class="relative">
+      <input id="q-phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" required pattern="[0-9+\(\)\s\-]{7,20}" placeholder="Celular" class={fieldCls} />
+      <label for="q-phone" class={labelCls}>Celular / WhatsApp *</label>
+    </div>
+    <div class="relative">
+      <input id="q-email" name="email" type="email" autocomplete="email" maxlength="120" placeholder="Correo" class={fieldCls} />
+      <label for="q-email" class={labelCls}>Correo electrónico</label>
+    </div>
+    <div class="relative">
+      <input id="q-city" name="city" type="text" autocomplete="address-level2" maxlength="60" placeholder="Ciudad" value="Bogotá" class={fieldCls} />
+      <label for="q-city" class={labelCls}>Ciudad o municipio</label>
+    </div>
+  </div>
+
+  <fieldset class="mt-6">
+    <legend class="text-sm font-medium text-grafito/70">¿Qué te interesa?</legend>
+    <div class="mt-3 flex flex-wrap gap-2">
+      {
+        categories.map((c) => (
+          <label class="chip inline-flex cursor-pointer items-center gap-2 rounded-full border border-petroleo-900/15 px-4 py-2 text-sm font-medium transition hover:border-petroleo-900/40 has-checked:border-petroleo-900 has-checked:bg-petroleo-900 has-checked:text-white has-focus-visible:ring-2 has-focus-visible:ring-ambar-400">
+            <input type="checkbox" name="interest" value={c.short} data-slug={c.slug} class="sr-only" checked={defaultInterest === c.slug} />
+            <Icon name={c.icon} class="size-4" />
+            {c.short}
+          </label>
+        ))
+      }
+      <label class="chip inline-flex cursor-pointer items-center gap-2 rounded-full border border-petroleo-900/15 px-4 py-2 text-sm font-medium transition hover:border-petroleo-900/40 has-checked:border-petroleo-900 has-checked:bg-petroleo-900 has-checked:text-white has-focus-visible:ring-2 has-focus-visible:ring-ambar-400">
+        <input type="checkbox" name="interest" value="No estoy seguro" class="sr-only" />
+        <Icon name="lightbulb" class="size-4" /> No estoy seguro
+      </label>
+    </div>
+  </fieldset>
+
+  <div class="mt-6 grid gap-4 sm:grid-cols-2">
+    <div class="relative">
+      <select id="q-space" name="space" class={`${fieldCls} appearance-none pr-10`}>
+        <option value="Hogar">Casa o apartamento</option>
+        <option value="Oficina">Oficina o empresa</option>
+        <option value="Comercio">Local o vitrina</option>
+        <option value="Edificio">Edificio o propiedad horizontal</option>
+        <option value="Otro">Otro</option>
+      </select>
+      <label for="q-space" class="pointer-events-none absolute top-2 left-4 text-xs text-petroleo-700">Tipo de espacio</label>
+      <Icon name="chevron-down" class="pointer-events-none absolute top-1/2 right-4 size-4 -translate-y-1/2 text-grafito/50" />
+    </div>
+    <div class="relative">
+      <input id="q-area" name="area" type="text" inputmode="decimal" maxlength="40" placeholder="Área" class={fieldCls} />
+      <label for="q-area" class={labelCls}>Área aproximada (m²) — opcional</label>
+    </div>
+  </div>
+
+  {
+    !compact && (
+      <div class="relative mt-4">
+        <textarea id="q-message" name="message" rows="4" maxlength="1500" placeholder="Mensaje" class={`${fieldCls} resize-y`}></textarea>
+        <label for="q-message" class={labelCls}>Cuéntanos tu proyecto (opcional)</label>
+      </div>
+    )
+  }
+
+  <!-- Trampa anti-spam: los humanos no ven este campo -->
+  <div class="absolute -left-[9999px]" aria-hidden="true">
+    <label for="q-company">No llenar</label>
+    <input id="q-company" name="company" type="text" tabindex="-1" autocomplete="off" />
+  </div>
+  <input type="hidden" name="page" value={Astro.url.pathname} />
+
+  <label class="mt-6 flex items-start gap-3 text-sm leading-relaxed text-grafito/70">
+    <input type="checkbox" name="consent" value="1" required class="mt-0.5 size-5 shrink-0 cursor-pointer rounded accent-petroleo-900" />
+    <span>
+      Autorizo a Maven Films S.A.S. a tratar mis datos para responder esta solicitud, según la
+      <a href="/politica-de-privacidad/" class="font-medium text-petroleo-700 underline underline-offset-2">política de tratamiento de datos</a> (Ley 1581 de 2012). *
+    </span>
+  </label>
+
+  <p class="form-error mt-4 hidden rounded-2xl bg-red-50 px-4 py-3 text-sm text-red-800" role="alert"></p>
+
+  <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+    <button type="submit" class="btn btn-primary w-full sm:w-auto">
+      <span class="label inline-flex items-center gap-2">Solicitar cotización <Icon name="send" class="size-4" /></span>
+      <span class="loading hidden items-center gap-2">
+        <svg class="size-4 animate-spin" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="10" stroke="currentColor" stroke-opacity=".25" stroke-width="3"></circle><path d="M22 12a10 10 0 0 0-10-10" stroke="currentColor" stroke-width="3" stroke-linecap="round"></path></svg>
+        Enviando…
+      </span>
+    </button>
+    <p class="text-sm text-grafito/55">Respondemos en menos de 1 día hábil.</p>
+  </div>
+</form>
+
+<div id="quote-success" class="card hidden p-8 text-center sm:p-12" tabindex="-1" role="status">
+  <div class="mx-auto grid size-16 place-items-center rounded-full bg-ambar-400 text-petroleo-950">
+    <Icon name="check" class="size-8" strokeWidth={2.5} />
+  </div>
+  <p class="mt-6 font-display text-2xl font-semibold text-petroleo-900">¡Recibimos tu solicitud!</p>
+  <p class="mx-auto mt-3 max-w-md leading-relaxed text-grafito/75">
+    Un asesor te contactará muy pronto. Si quieres agilizar, envíanos fotos de tus vidrios por WhatsApp.
+  </p>
+  <a href={whatsappUrl('Hola Maven Films, acabo de enviar una solicitud de cotización desde la web. Les comparto fotos de mis vidrios.')} target="_blank" rel="noopener" class="btn btn-dark mt-8">
+    <Icon name="whatsapp" class="size-4" /> Enviar fotos por WhatsApp
+  </a>
+</div>
+
+<script>
+  const form = document.getElementById('quote-form') as HTMLFormElement | null;
+  const success = document.getElementById('quote-success');
+  if (form && success) {
+    form.noValidate = true;
+    const errorEl = form.querySelector<HTMLElement>('.form-error')!;
+    const btn = form.querySelector<HTMLButtonElement>('button[type=submit]')!;
+    const setLoading = (on: boolean) => {
+      btn.disabled = on;
+      btn.querySelector('.label')!.classList.toggle('hidden', on);
+      btn.querySelector('.loading')!.classList.toggle('hidden', !on);
+      btn.querySelector('.loading')!.classList.toggle('inline-flex', on);
+    };
+    const showError = (msg: string) => {
+      errorEl.textContent = msg;
+      errorEl.classList.remove('hidden');
+    };
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      errorEl.classList.add('hidden');
+      if (!form.checkValidity()) {
+        const firstInvalid = form.querySelector<HTMLElement>(':invalid');
+        const name = firstInvalid?.getAttribute('name');
+        showError(
+          name === 'consent'
+            ? 'Para continuar, autoriza el tratamiento de tus datos.'
+            : name === 'phone'
+              ? 'Revisa tu número de celular.'
+              : name === 'email'
+                ? 'Revisa tu correo electrónico.'
+                : 'Completa los campos obligatorios (*).',
+        );
+        firstInvalid?.focus();
+        return;
+      }
+      setLoading(true);
+      try {
+        const fd = new FormData(form);
+        const payload = { ...Object.fromEntries(fd.entries()), interest: fd.getAll('interest') };
+        const res = await fetch(form.action, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const json = await res.json().catch(() => ({}));
+        if (!res.ok || !json.ok) throw new Error(json.error || 'No pudimos enviar tu solicitud.');
+        form.classList.add('hidden');
+        success.classList.remove('hidden');
+        success.focus();
+        (window as any).gtag?.('event', 'generate_lead', { form: 'cotizacion' });
+        (window as any).fbq?.('track', 'Lead');
+      } catch (err) {
+        showError(`${(err as Error).message} Inténtalo de nuevo o escríbenos por WhatsApp.`);
+      } finally {
+        setLoading(false);
+      }
+    });
+  }
+</script>

@@ -1,0 +1,20 @@
+---
+interface Props {
+  eyebrow?: string;
+  /** Admite HTML simple (p. ej. <span>) para resaltar palabras. */
+  title: string;
+  lead?: string;
+  align?: 'left' | 'center';
+  tone?: 'light' | 'dark';
+  as?: 'h2' | 'h1' | 'h3';
+  class?: string;
+}
+const { eyebrow, title, lead, align = 'left', tone = 'light', as: Tag = 'h2', class: className = '' } = Astro.props;
+---
+
+<div class:list={[align === 'center' ? 'mx-auto max-w-3xl text-center' : 'max-w-3xl', className]} data-reveal>
+  {eyebrow && <p class:list={['eyebrow', tone === 'dark' && 'eyebrow-light', align === 'center' && 'justify-center']}>{eyebrow}</p>}
+  <Tag class:list={['mt-4 text-[2rem] leading-[1.1] font-semibold sm:text-[2.6rem] lg:text-5xl', tone === 'dark' && '!text-white']} set:html={title} />
+  {lead && <p class:list={['mt-5 text-lg leading-relaxed', tone === 'dark' ? 'text-white/70' : 'text-grafito/75']}>{lead}</p>}
+  <slot />
+</div>

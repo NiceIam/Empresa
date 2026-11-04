@@ -1,0 +1,201 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { Picture } from 'astro:assets';
+import { getCollection } from 'astro:content';
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import PageHero from '@/components/ui/PageHero.astro';
+import Icon from '@/components/ui/Icon.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import ProductCard from '@/components/ui/ProductCard.astro';
+import FaqList from '@/components/ui/FaqList.astro';
+import ToneSimulator from '@/components/sections/ToneSimulator.astro';
+import CtaBand from '@/components/sections/CtaBand.astro';
+import { categories, productsIn, productUrl, categoryUrl, type Category } from '@/data/catalog';
+import { whatsappUrl } from '@/config/site';
+import { faqSchema, serviceSchema, itemListSchema, abs } from '@/lib/schema';
+
+export const getStaticPaths = (() => categories.map((c) => ({ params: { categoria: c.slug }, props: { category: c } }))) satisfies GetStaticPaths;
+
+interface Props { category: Category }
+const { category: c } = Astro.props;
+const list = productsIn(c.slug);
+const url = categoryUrl(c.slug);
+const others = categories.filter((o) => o.slug !== c.slug);
+const guideCategory = { 'control-solar': 'Control solar', seguridad: 'Seguridad', decorativas: 'Decorativas', sandblasting: 'Sandblasting' }[c.slug];
+const guides = (await getCollection('guias')).filter((g) => g.data.category === guideCategory || g.data.related.some((r) => list.some((p) => p.slug === r))).slice(0, 3);
+
+const ratingKeys = [
+  { key: 'calor', label: 'Rechazo de calor' },
+  { key: 'privacidad', label: 'Privacidad' },
+  { key: 'seguridad', label: 'Seguridad' },
+  { key: 'visibilidad', label: 'Visibilidad' },
+] as const;
+const showCompare = c.slug === 'control-solar' || c.slug === 'seguridad';
+const usedKeys = ratingKeys.filter((k) => list.some((p) => (p.ratings?.[k.key] ?? 0) > 1));
+
+const breadcrumbs = [
+  { name: 'Inicio', href: '/' },
+  { name: 'Películas', href: '/peliculas/' },
+  { name: c.short, href: url },
+];
+const waMsg = `Hola Maven Films, quiero cotizar ${c.name.toLowerCase()}.`;
+---
+
+<BaseLayout
+  title={c.seoTitle}
+  description={c.seoDescription}
+  image={c.heroImage}
+  imageAlt={c.imageAlt}
+  breadcrumbs={breadcrumbs}
+  whatsappMessage={waMsg}
+  schema={[
+    serviceSchema({
+      name: c.name,
+      description: c.seoDescription,
+      url,
+      serviceType: c.name,
+      offers: list.map((p) => ({ name: p.name, url: productUrl(p) })),
+    }),
+    itemListSchema(c.name, list.map((p) => ({ name: p.name, url: productUrl(p) }))),
+    faqSchema(c.faqs),
+  ]}
+>
+  <PageHero eyebrow={c.eyebrow} title={c.h1} lead={c.lead} image={c.heroImage} imageAlt={c.imageAlt} breadcrumbs={breadcrumbs} size="lg">
+    <div class="mt-10 flex flex-wrap gap-3">
+      <a href={`/contacto/?linea=${c.slug}`} class="btn btn-primary">Cotizar {c.short.toLowerCase()} <Icon name="arrow-right" class="size-4" /></a>
+      <a href={whatsappUrl(waMsg)} target="_blank" rel="noopener" class="btn btn-ghost-light"><Icon name="whatsapp" class="size-4" /> Asesoría por WhatsApp</a>
+    </div>
+    <ul class="mt-12 flex flex-wrap gap-x-8 gap-y-3 text-sm text-white/75">
+      {c.benefits.map((b) => <li class="flex items-center gap-2"><Icon name={b.icon} class="size-4 text-ambar-300" />{b.title}</li>)}
+    </ul>
+  </PageHero>
+
+  <!-- Introducción -->
+  <section class="py-24 lg:py-28">
+    <div class="container-page grid gap-14 lg:grid-cols-[1.1fr_0.9fr] lg:gap-20">
+      <div data-reveal>
+        <p class="eyebrow">Qué es</p>
+        <h2 class="mt-4 text-3xl leading-tight font-semibold sm:text-4xl">{c.name}: lo que debes saber</h2>
+        <div class="prose-maven mt-6">
+          {c.intro.map((p) => <p>{p}</p>)}
+        </div>
+      </div>
+      <div class="grid gap-4 self-start sm:grid-cols-2">
+        {
+          c.benefits.map((b, i) => (
+            <div class="card p-6" data-reveal style={`--reveal-delay:${i * 80}`}>
+              <span class="grid size-11 place-items-center rounded-xl bg-petroleo-900 text-ambar-300"><Icon name={b.icon} class="size-5" /></span>
+              <h3 class="mt-5 text-lg font-semibold">{b.title}</h3>
+              <p class="mt-1.5 text-[0.95rem] leading-relaxed text-grafito/70">{b.text}</p>
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <!-- Productos -->
+  <section class="bg-concreto/60 py-24 lg:py-28" id="productos">
+    <div class="container-page">
+      <SectionHeading eyebrow="Referencias" title={`${list.length} opciones de ${c.short.toLowerCase()}`} lead="Elige la que mejor se adapta a tu espacio o déjanos recomendarte en la visita técnica." />
+      <div class:list={['mt-12 grid gap-6 sm:grid-cols-2', list.length > 2 && 'lg:grid-cols-3', list.length === 4 && 'xl:grid-cols-4']}>
+        {list.map((p, i) => <ProductCard product={p} delay={i * 80} />)}
+      </div>
+    </div>
+  </section>
+
+  {
+    showCompare && usedKeys.length > 0 && (
+      <section class="py-24 lg:py-28">
+        <div class="container-page">
+          <SectionHeading eyebrow="Comparador" title="Compara de un vistazo" lead="Escala de referencia de 1 a 5 para orientar tu decisión. El desempeño exacto depende del tono y del tipo de vidrio." />
+          <div class="mt-12 overflow-x-auto rounded-3xl border border-petroleo-900/10 bg-white shadow-[var(--shadow-card)]" data-reveal>
+            <table class="w-full min-w-[40rem] text-left">
+              <caption class="sr-only">Comparativa de {c.name.toLowerCase()}</caption>
+              <thead>
+                <tr class="border-b border-petroleo-900/10">
+                  <th scope="col" class="px-6 py-5 font-display text-sm font-semibold text-grafito/60">Película</th>
+                  {usedKeys.map((k) => <th scope="col" class="px-6 py-5 font-display text-sm font-semibold text-grafito/60">{k.label}</th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {list.map((p) => (
+                  <tr class="border-b border-petroleo-900/5 last:border-0 hover:bg-concreto/30">
+                    <th scope="row" class="px-6 py-5">
+                      <a href={productUrl(p)} class="font-display font-semibold text-petroleo-900 hover:text-petroleo-600">{p.name}</a>
+                    </th>
+                    {usedKeys.map((k) => {
+                      const v = p.ratings?.[k.key] ?? 0;
+                      return (
+                        <td class="px-6 py-5">
+                          <span class="flex gap-1" role="img" aria-label={`${v} de 5`}>
+                            {Array.from({ length: 5 }, (_, i) => <span class:list={['h-2 w-6 rounded-full', i < v ? 'bg-petroleo-700' : 'bg-petroleo-900/10']} />)}
+                          </span>
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  {c.slug === 'control-solar' && <ToneSimulator />}
+
+  <!-- FAQ -->
+  <section class="bg-white py-24 lg:py-28">
+    <div class="container-page grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
+      <SectionHeading eyebrow="Preguntas frecuentes" title={`Dudas sobre ${c.short.toLowerCase()}`} />
+      <FaqList faqs={c.faqs} />
+    </div>
+  </section>
+
+  {
+    guides.length > 0 && (
+      <section class="py-24 lg:py-28">
+        <div class="container-page">
+          <SectionHeading eyebrow="Guías relacionadas" title="Aprende antes de decidir" />
+          <div class="mt-12 grid gap-6 md:grid-cols-3">
+            {guides.map((g, i) => (
+              <article class="group relative card overflow-hidden" data-reveal style={`--reveal-delay:${i * 80}`}>
+                <div class="aspect-[16/10] overflow-hidden">
+                  <Picture src={g.data.image} alt={g.data.imageAlt} formats={['avif', 'webp']} widths={[400, 640]} sizes="(min-width: 768px) 33vw, 100vw" class="h-full w-full object-cover transition-transform duration-700 group-hover:scale-105" />
+                </div>
+                <div class="p-6">
+                  <p class="text-sm text-petroleo-600">{g.data.readingTime} min de lectura</p>
+                  <h3 class="mt-2 text-lg leading-snug font-semibold">
+                    <a href={`/guias/${g.id}/`} class="after:absolute after:inset-0">{g.data.title}</a>
+                  </h3>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <!-- Otras líneas -->
+  <section class="border-t border-petroleo-900/10 py-16">
+    <div class="container-page">
+      <p class="eyebrow">Otras líneas</p>
+      <div class="mt-6 grid gap-4 sm:grid-cols-3">
+        {
+          others.map((o) => (
+            <a href={categoryUrl(o.slug)} class="group flex items-center gap-4 rounded-2xl border border-petroleo-900/10 bg-white p-5 transition hover:border-petroleo-900/30 hover:shadow-[var(--shadow-card)]">
+              <span class="grid size-11 place-items-center rounded-xl bg-concreto text-petroleo-900 transition group-hover:bg-ambar-400"><Icon name={o.icon} class="size-5" /></span>
+              <span class="flex-1 font-display font-semibold text-petroleo-900">{o.short}</span>
+              <Icon name="arrow-right" class="size-4 text-grafito/40 transition group-hover:translate-x-1 group-hover:text-petroleo-900" />
+            </a>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <CtaBand whatsappMessage={waMsg} />
+</BaseLayout>

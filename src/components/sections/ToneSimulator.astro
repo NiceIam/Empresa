@@ -1,0 +1,171 @@
+---
+import { Picture } from 'astro:assets';
+import Icon from '@/components/ui/Icon.astro';
+import SectionHeading from '@/components/ui/SectionHeading.astro';
+import sala from '@/assets/images/sala-ventanales.jpg';
+
+interface Props { headingLevel?: 'h2' | 'h3' }
+
+const tones = [
+  { vlt: 70, label: '70 %', name: 'MKR70', alpha: 0.2, privacy: 1, light: 5, use: 'Casi invisible. Rechaza calor conservando la vista y la fachada.', href: '/peliculas/control-solar/nanoceramica-mkr70/' },
+  { vlt: 50, label: '50 %', name: 'Sutil', alpha: 0.36, privacy: 2, light: 4, use: 'Toque ahumado elegante. Ideal para salas y oficinas luminosas.', href: '/peliculas/control-solar/polarizado-nanoceramico/' },
+  { vlt: 35, label: '35 %', name: 'Equilibrado', alpha: 0.52, privacy: 3, light: 3, use: 'El favorito en hogares: privacidad diurna y buena luz natural.', href: '/peliculas/control-solar/polarizado-nanoceramico/' },
+  { vlt: 20, label: '20 %', name: 'Privado', alpha: 0.68, privacy: 4, light: 2, use: 'Alta privacidad y control de brillo para habitaciones y estudios.', href: '/peliculas/control-solar/polarizado-convencional/' },
+  { vlt: 5, label: '5 %', name: 'Máximo', alpha: 0.86, privacy: 5, light: 1, use: 'Privacidad máxima. Para zonas con sol intenso o que exigen reserva total.', href: '/peliculas/control-solar/polarizado-convencional/' },
+];
+const initial = tones[2];
+---
+
+<section class="relative overflow-hidden bg-petroleo-950 py-24 text-white lg:py-32" id="simulador">
+  <div class="absolute inset-0 bg-grain opacity-[0.04]"></div>
+  <div class="container-page relative grid items-center gap-14 lg:grid-cols-[1fr_1.35fr]">
+    <div>
+      <SectionHeading
+        eyebrow="Simulador de tonos"
+        title={'Mira cómo se vería <span class="text-ambar-300">tu ventana</span>'}
+        lead="Arrastra el control para comparar sin película y con película. Elige un tono para ver cuánta luz y privacidad obtienes."
+        tone="dark"
+      />
+
+      <div class="mt-10" role="radiogroup" aria-label="Tono de la película (transmisión de luz visible)">
+        <div class="grid grid-cols-5 gap-2">
+          {
+            tones.map((t) => (
+              <button
+                type="button"
+                role="radio"
+                aria-checked={t.vlt === initial.vlt ? 'true' : 'false'}
+                tabindex={t.vlt === initial.vlt ? 0 : -1}
+                class="tone-btn group rounded-2xl border border-white/12 px-2 py-3 text-center transition hover:border-white/40 aria-checked:border-ambar-400 aria-checked:bg-ambar-400 aria-checked:text-petroleo-950"
+                data-vlt={t.vlt}
+                data-alpha={t.alpha}
+                data-privacy={t.privacy}
+                data-light={t.light}
+                data-use={t.use}
+                data-name={t.name}
+                data-href={t.href}
+              >
+                <span class="block font-display text-lg font-semibold">{t.label}</span>
+                <span class="block text-[0.7rem] text-white/60 group-aria-checked:text-petroleo-900/80">{t.name}</span>
+              </button>
+            ))
+          }
+        </div>
+      </div>
+
+      <div class="mt-8 grid gap-4 rounded-3xl glass p-6">
+        <dl class="grid gap-4">
+        <div class="flex items-center justify-between gap-4">
+          <dt class="text-sm text-white/70">Luz natural</dt>
+          <dd class="flex gap-1" data-meter="light" aria-label={`${initial.light} de 5`}>
+            {Array.from({ length: 5 }, (_, i) => <span class:list={['h-2 w-7 rounded-full transition-colors duration-500', i < initial.light ? 'bg-ambar-400' : 'bg-white/15']} />)}
+          </dd>
+        </div>
+        <div class="flex items-center justify-between gap-4">
+          <dt class="text-sm text-white/70">Privacidad diurna</dt>
+          <dd class="flex gap-1" data-meter="privacy" aria-label={`${initial.privacy} de 5`}>
+            {Array.from({ length: 5 }, (_, i) => <span class:list={['h-2 w-7 rounded-full transition-colors duration-500', i < initial.privacy ? 'bg-ambar-400' : 'bg-white/15']} />)}
+          </dd>
+        </div>
+        </dl>
+        <div class="border-t border-white/10 pt-4">
+          <p class="text-[0.95rem] leading-relaxed text-white/85" data-use aria-live="polite">{initial.use}</p>
+          <a href={initial.href} data-link class="mt-3 inline-flex items-center gap-1.5 font-display text-sm font-semibold text-ambar-300 hover:text-ambar-200">
+            Ver película recomendada <Icon name="arrow-right" class="size-4" />
+          </a>
+        </div>
+      </div>
+      <p class="mt-4 flex items-start gap-2 text-xs text-white/45">
+        <Icon name="info" class="mt-0.5 size-3.5 shrink-0" /> Simulación ilustrativa. Te llevamos muestras reales para comparar sobre tu propio vidrio.
+      </p>
+    </div>
+
+    <div class="relative" data-reveal>
+      <div
+        class="compare relative aspect-[4/5] overflow-hidden rounded-[2rem] shadow-2xl ring-1 ring-white/10 select-none sm:aspect-[5/4]"
+        style={`--pos:50%; --alpha:${initial.alpha}`}
+      >
+        <Picture
+          src={sala}
+          alt="Sala con ventanal amplio usada para simular el tono de la película"
+          formats={['avif', 'webp']}
+          widths={[640, 960, 1280, 1600]}
+          sizes="(min-width: 1024px) 700px, 100vw"
+          class="absolute inset-0 h-full w-full object-cover"
+          loading="lazy"
+        />
+        <div class="tint absolute inset-0" aria-hidden="true"></div>
+        <div class="handle pointer-events-none absolute inset-y-0 w-0.5 bg-white/90 shadow-[0_0_20px_rgba(0,0,0,0.4)]" aria-hidden="true">
+          <span class="absolute top-1/2 left-1/2 grid size-12 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-white text-petroleo-900 shadow-xl">
+            <svg viewBox="0 0 24 24" class="size-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18-6-6 6-6M15 6l6 6-6 6" /></svg>
+          </span>
+        </div>
+        <span class="absolute top-4 left-4 rounded-full bg-petroleo-950/60 px-3 py-1 text-xs font-semibold text-white backdrop-blur-md">Sin película</span>
+        <span class="absolute top-4 right-4 rounded-full bg-ambar-400 px-3 py-1 text-xs font-semibold text-petroleo-950" data-badge>Con película {initial.label}</span>
+        <label class="sr-only" for="compare-range">Desliza para comparar sin película y con película</label>
+        <input id="compare-range" type="range" min="0" max="100" value="50" class="compare-range absolute inset-0 h-full w-full cursor-ew-resize opacity-0" />
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .compare .tint {
+    clip-path: inset(0 0 0 var(--pos));
+    /* Tinte ahumado frío, similar a una película real sobre el vidrio. */
+    background: linear-gradient(180deg, rgb(8 22 28 / calc(var(--alpha) * 0.92)), rgb(12 30 38 / var(--alpha)));
+    transition: background 0.6s var(--ease-out-expo);
+  }
+  .compare .handle { left: var(--pos); }
+  .compare-range:focus-visible + * { outline: none; }
+  .compare:has(.compare-range:focus-visible) { outline: 2px solid var(--color-ambar-400); outline-offset: 4px; }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLElement>('#simulador').forEach((root) => {
+    const compare = root.querySelector<HTMLElement>('.compare')!;
+    const range = root.querySelector<HTMLInputElement>('.compare-range')!;
+    const buttons = root.querySelectorAll<HTMLButtonElement>('.tone-btn');
+    const useEl = root.querySelector<HTMLElement>('[data-use]')!;
+    const linkEl = root.querySelector<HTMLAnchorElement>('[data-link]')!;
+    const badge = root.querySelector<HTMLElement>('[data-badge]')!;
+
+    range.addEventListener('input', () => compare.style.setProperty('--pos', `${range.value}%`));
+
+    const paint = (meter: string, value: number) => {
+      const dd = root.querySelector<HTMLElement>(`[data-meter="${meter}"]`)!;
+      dd.setAttribute('aria-label', `${value} de 5`);
+      dd.querySelectorAll('span').forEach((s, i) => {
+        s.classList.toggle('bg-ambar-400', i < value);
+        s.classList.toggle('bg-white/15', i >= value);
+      });
+    };
+
+    const select = (btn: HTMLButtonElement) => {
+      // Tabindex itinerante: solo el tono activo es parada de Tab (patrón radiogroup).
+      buttons.forEach((b) => {
+        b.setAttribute('aria-checked', String(b === btn));
+        b.tabIndex = b === btn ? 0 : -1;
+      });
+      const d = btn.dataset;
+      compare.style.setProperty('--alpha', d.alpha!);
+      paint('light', Number(d.light));
+      paint('privacy', Number(d.privacy));
+      useEl.textContent = d.use!;
+      linkEl.href = d.href!;
+      badge.textContent = `Con película ${d.vlt} %`;
+    };
+
+    buttons.forEach((btn, i) => {
+      btn.addEventListener('click', () => select(btn));
+      btn.addEventListener('keydown', (e) => {
+        const dir = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? 1 : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? -1 : 0;
+        if (!dir) return;
+        e.preventDefault();
+        const next = buttons[(i + dir + buttons.length) % buttons.length];
+        next.focus();
+        select(next);
+      });
+    });
+  });
+</script>

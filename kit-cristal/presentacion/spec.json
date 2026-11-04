@@ -1,0 +1,38 @@
+{
+  "brand": "Maven Films",
+  "tagline": "Películas de seguridad, control solar, decorativas y sandblasting",
+  "brief": "Maven Films S.A.S. instala películas para vidrio: seguridad, control solar, decorativas y sandblasting. El logo debe hablar de vidrio y película, verse técnico y confiable, y funcionar en fachadas, vehículos, tarjetas y pantalla.",
+  "adjectives": ["protección", "claridad", "precisión", "solidez"],
+  "criteria": "Éxito: se entiende como vidrio + película, funciona a 16 px y en un solo color, y se diferencia del azul corporativo de la categoría.",
+  "industry": "services",
+  "mockups": ["signage", "business-card", "website", "social", "app-icon", "badge"],
+  "nav": ["Seguridad", "Control solar", "Decorativas", "Sandblasting"],
+  "brand_color": "#0F2E3A",
+  "tile_color": "#0F2E3A",
+  "greyscale": false,
+  "final": true,
+  "designer": "Maven Films",
+  "round": 5,
+  "concepts": [
+    {
+      "name": "Cristal",
+      "symbol": "../svg/maven-films-simbolo-color.svg",
+      "lockup": "../svg/maven-films-horizontal-color.svg",
+      "stacked": "../svg/maven-films-apilado-color.svg",
+      "avatar": "../svg/maven-films-avatar.svg",
+      "symbol_on_tile": "../svg/maven-films-simbolo-reverso.svg",
+      "lockup_on_tile": "../svg/maven-films-horizontal-reverso.svg",
+      "stacked_on_tile": "../svg/maven-films-apilado-reverso.svg",
+      "symbol_on_dark": "../svg/maven-films-simbolo-reverso.svg",
+      "lockup_on_dark": "../svg/maven-films-horizontal-reverso.svg",
+      "stacked_on_dark": "../svg/maven-films-apilado-reverso.svg",
+      "idea": "Un panel de vidrio y una lámina de película superpuestos: donde se cruzan, el vidrio queda protegido.",
+      "rationale": [
+        "Es literal sin ser clip-art: vidrio con reflejo + película ámbar, sin escudos ni soles genéricos",
+        "El traslape en Petróleo es la propuesta de valor: vidrio + película = vidrio protegido",
+        "Dos formas planas y una paleta cerrada: funciona en un color, en negativo y a 16 px"
+      ]
+    }
+  ],
+  "recommendation": "Cristal es la dirección final. Se entrega con versiones a color, negro, blanco, Petróleo y reverso, una versión pequeña sin reflejos para favicon, y la guía de uso."
+}

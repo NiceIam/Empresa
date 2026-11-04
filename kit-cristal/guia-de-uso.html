@@ -1,0 +1,133 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><title>Maven Films - Guía de uso de marca</title>
+<style>
+@page { size: A4; margin: 0 }
+:root { --pet:#0F2E3A; --amb:#E39B2D; --ace:#C5CBD0; --con:#E9E7E2; --gra:#22262A }
+* { box-sizing:border-box }
+body { margin:0; font-family: Inter, "Segoe UI", system-ui, sans-serif; color:var(--gra); background:#fff; font-size:10.5px; line-height:1.45 }
+.page { width:210mm; height:297mm; padding:14mm 15mm 12mm; position:relative; page-break-after:always; overflow:hidden }
+h1 { font-size:22px; margin:0 0 2px; color:var(--pet) }
+h2 { font-size:12.5px; margin:15px 0 6px; color:var(--pet); text-transform:uppercase; letter-spacing:.08em; border-bottom:2px solid var(--amb); padding-bottom:3px; display:inline-block }
+p { margin:3px 0 }
+.sub { color:#5b6770; margin-bottom:6px }
+.row { display:flex; gap:12px; align-items:flex-start }
+.col { flex:1 }
+.card { border:1px solid #dcdfe2; border-radius:8px; padding:10px; background:#fff }
+.dark { background:var(--pet); border-color:var(--pet); color:#fff }
+.con { background:var(--con) }
+.lbl { font-size:9px; color:#6b7780; margin-top:5px }
+.dark .lbl { color:#aab7be }
+table { border-collapse:collapse; width:100%; font-size:10px }
+th, td { text-align:left; padding:4px 6px; border-bottom:1px solid #e3e6e8 }
+th { color:var(--pet); font-weight:700 }
+.ok { color:#1b7a3d; font-weight:700 } .no { color:#b3261e; font-weight:700 }
+.sws { display:grid; grid-template-columns:repeat(5,1fr); gap:8px }
+.sw .chip { height:62px; border-radius:6px; display:flex; align-items:flex-end; padding:6px; font-weight:700; font-size:11px; border:1px solid rgba(0,0,0,.08) }
+.sw .meta { font-size:9px; margin-top:4px } .sw .meta span { color:#5b6770 }
+.grid3 { display:grid; grid-template-columns:repeat(3,1fr); gap:8px }
+.cell { height:78px; border-radius:7px; display:flex; align-items:center; justify-content:center; border:1px solid #dcdfe2 }
+.cell img { max-width:82%; max-height:66% }
+.cap { font-size:9px; color:#5b6770; text-align:center; margin-top:3px }
+.dont { position:relative }
+.dont .cell { background:#fff; overflow:hidden }
+.x { position:absolute; top:4px; right:7px; color:#b3261e; font-weight:800; font-size:14px }
+.foot { position:absolute; left:15mm; right:15mm; bottom:8mm; font-size:8.5px; color:#7b8790; display:flex; justify-content:space-between; border-top:1px solid #e3e6e8; padding-top:4px }
+.cs { display:inline-block; border:1.5px dashed var(--amb); padding:18.2px; position:relative; background:#fff }
+.cs img { display:block; width:420px }
+.cs i { position:absolute; color:var(--amb); font-style:normal; font-weight:800; font-size:10px }
+</style></head><body>
+
+<!-- ===================== PÁGINA 1 ===================== -->
+<section class="page">
+  <h1>Maven Films · Guía de uso de marca</h1>
+  <div class="sub">Maven Films S.A.S. · Películas de seguridad, control solar, decorativas y sandblasting · Versión 1.0</div>
+
+  <h2>1 · El logo</h2>
+  <p><b>Idea:</b> un panel de vidrio y una lámina de película superpuestos. Donde se cruzan, el vidrio queda protegido (Petróleo). El destello en el vidrio y el Ámbar de la película cuentan el producto sin escudos ni soles genéricos.</p>
+  <div class="row" style="margin-top:8px">
+    <div class="col card con" style="flex:2.2"><div style="display:flex;justify-content:center"><img src="svg/maven-films-horizontal-color.svg" style="width:300px"></div><div class="lbl" style="text-align:center">Horizontal · versión principal</div></div>
+    <div class="col card con" style="flex:1"><div style="display:flex;justify-content:center"><img src="svg/maven-films-apilado-color.svg" style="width:112px"></div><div class="lbl" style="text-align:center">Apilado</div></div>
+    <div class="col card con" style="flex:.7"><div style="display:flex;justify-content:center"><img src="svg/maven-films-simbolo-color.svg" style="width:70px"></div><div class="lbl" style="text-align:center">Símbolo</div></div>
+  </div>
+
+  <h2>2 · Espacio de seguridad</h2>
+  <div class="row">
+    <div style="flex:none"><div class="cs"><img src="svg/maven-films-horizontal-color.svg">
+      <i style="left:3px;top:50%">x</i><i style="right:3px;top:50%">x</i><i style="left:50%;top:1px">x</i><i style="left:50%;bottom:1px">x</i></div></div>
+    <div class="col">
+      <p>Deja libre un margen de <b>x</b> en los cuatro lados, donde <b>x = ¼ del lado del panel de vidrio</b> (≈ 19 % de la altura del símbolo). El margen escala con el logo: nunca uses una distancia fija.</p>
+      <p>Dentro de ese espacio no van textos, bordes ni otras imágenes.</p>
+    </div>
+  </div>
+
+  <h2>3 · Tamaño mínimo</h2>
+  <table>
+    <tr><th>Versión</th><th>Pantalla</th><th>Impresión *</th><th>Nota</th></tr>
+    <tr><td>Horizontal</td><td>220 px de ancho</td><td>45 mm</td><td>Por debajo, FILMS deja de leerse: usa el símbolo solo.</td></tr>
+    <tr><td>Apilado</td><td>160 px de ancho</td><td>32 mm</td><td>Mismo criterio.</td></tr>
+    <tr><td>Símbolo completo (con destello)</td><td>32 px</td><td>8 mm</td><td>Por debajo de 32 px el destello desaparece.</td></tr>
+    <tr><td>Símbolo versión pequeña</td><td>16 px</td><td>5 mm</td><td>Archivo <i>simbolo-pequeno</i> / favicon. Sin destello.</td></tr>
+  </table>
+  <p class="lbl">* Mínimos de impresión recomendados a partir de las pruebas en pantalla; confirmar con el impresor y con una prueba real en vinilo antes de producción.</p>
+
+  <h2>4 · Color</h2>
+  <div class="sws">
+    <div class="sw"><div class="chip" style="background:#0F2E3A;color:#fff">Petróleo</div><div class="meta"><b>#0F2E3A</b><br>RGB 15 · 46 · 58<br>CMYK ≈ 74 · 21 · 0 · 77<br><span>Base · ~60 %. Fondos, logo, textos grandes.</span></div></div>
+    <div class="sw"><div class="chip" style="background:#E39B2D;color:#22262A">Ámbar solar</div><div class="meta"><b>#E39B2D</b><br>RGB 227 · 155 · 45<br>CMYK ≈ 0 · 32 · 80 · 11<br><span>Acento · ~10 %. Solo como forma, nunca texto sobre blanco.</span></div></div>
+    <div class="sw"><div class="chip" style="background:#C5CBD0;color:#22262A">Acero</div><div class="meta"><b>#C5CBD0</b><br>RGB 197 · 203 · 208<br>CMYK ≈ 5 · 2 · 0 · 18<br><span>El vidrio. Superficies.</span></div></div>
+    <div class="sw"><div class="chip" style="background:#E9E7E2;color:#22262A">Concreto</div><div class="meta"><b>#E9E7E2</b><br>RGB 233 · 231 · 226<br>CMYK ≈ 0 · 1 · 3 · 9<br><span>Fondo neutro.</span></div></div>
+    <div class="sw"><div class="chip" style="background:#22262A;color:#fff">Grafito</div><div class="meta"><b>#22262A</b><br>RGB 34 · 38 · 42<br>CMYK ≈ 19 · 10 · 0 · 84<br><span>Texto, perfilería.</span></div></div>
+  </div>
+  <p class="lbl">Regla de uso 60 · 30 · 10. CMYK es una conversión aproximada; los equivalentes Pantone están pendientes y deben definirse con el impresor contra una prueba física.</p>
+
+  <div class="foot"><span>Maven Films S.A.S. · Guía de uso de marca v1.0</span><span>1 / 2</span></div>
+</section>
+
+<!-- ===================== PÁGINA 2 ===================== -->
+<section class="page">
+  <h2 style="margin-top:0">5 · Versiones y fondos aprobados</h2>
+  <div class="grid3">
+    <div><div class="cell"><img src="svg/maven-films-horizontal-color.svg"></div><div class="cap"><b>Color</b> · sobre blanco o Concreto</div></div>
+    <div><div class="cell" style="background:#0F2E3A"><img src="svg/maven-films-horizontal-reverso.svg"></div><div class="cap"><b>Reverso</b> · sobre Petróleo o fondos oscuros</div></div>
+    <div><div class="cell"><img src="svg/maven-films-horizontal-negro.svg"></div><div class="cap"><b>Negro</b> · un color, sobre claro</div></div>
+    <div><div class="cell" style="background:#22262A"><img src="svg/maven-films-horizontal-blanco.svg"></div><div class="cap"><b>Blanco</b> · un color, sobre oscuro</div></div>
+    <div><div class="cell" style="background:#E9E7E2"><img src="svg/maven-films-horizontal-petroleo.svg"></div><div class="cap"><b>Petróleo</b> · un color de marca</div></div>
+    <div><div class="cell" style="background:#0F2E3A"><img src="svg/maven-films-app-icon.svg" style="max-height:62px;max-width:62px"></div><div class="cap"><b>Ícono / favicon</b> · tile Petróleo</div></div>
+  </div>
+  <p style="margin-top:6px">En el <b>reverso</b>, el traslape es un hueco real: deja ver el fondo. Úsalo siempre que el fondo sea oscuro; la versión a color funde el traslape con un fondo Petróleo. Sobre fotografías, usa blanco o negro en una zona tranquila, o el ícono con tile.</p>
+
+  <h2>6 · Contraste de la paleta</h2>
+  <table>
+    <tr><th>Combinación</th><th>Contraste</th><th>Uso</th></tr>
+    <tr><td>Petróleo sobre Concreto / blanco</td><td>11.5 : 1 / 14.3 : 1</td><td class="ok">Texto y logo. Recomendado.</td></tr>
+    <tr><td>Concreto / blanco sobre Petróleo</td><td>11.5 : 1 / 14.3 : 1</td><td class="ok">Texto y logo reverso.</td></tr>
+    <tr><td>Ámbar sobre Petróleo</td><td>6.1 : 1</td><td class="ok">Formas, botones, detalles.</td></tr>
+    <tr><td>Grafito sobre Concreto</td><td>12.3 : 1</td><td class="ok">Texto de apoyo.</td></tr>
+    <tr><td>Ámbar sobre blanco</td><td>2.3 : 1</td><td class="no">Nunca como texto. Solo forma decorativa (regla, película del logo).</td></tr>
+    <tr><td>Acero sobre blanco</td><td>1.6 : 1</td><td class="no">El vidrio se ve suave sobre fondos claros: es esperado. No lo uses como texto.</td></tr>
+  </table>
+
+  <h2>7 · Tipografía</h2>
+  <p>El wordmark <b>MAVEN FILMS</b> es un dibujo propio (letras construidas como trazos): <b>no lo reescribas con una fuente</b>; usa siempre los archivos. Para textos de apoyo se sugiere <b>Inter</b> (licencia libre OFL), en peso regular y semibold; alternativa del sistema: Segoe UI / Arial. Confirmar contra el manual de marca vigente de Maven.</p>
+
+  <h2>8 · Lo que no se debe hacer</h2>
+  <div class="grid3">
+    <div class="dont"><div class="cell"><img src="svg/maven-films-horizontal-color.svg" style="transform:scaleX(1.45)"></div><span class="x">✕</span><div class="cap">No estirar ni deformar</div></div>
+    <div class="dont"><div class="cell"><img src="svg/maven-films-horizontal-color.svg" style="filter:hue-rotate(115deg) saturate(1.6)"></div><span class="x">✕</span><div class="cap">No cambiar los colores</div></div>
+    <div class="dont"><div class="cell"><img src="svg/maven-films-horizontal-color.svg" style="transform:rotate(-12deg)"></div><span class="x">✕</span><div class="cap">No rotar</div></div>
+    <div class="dont"><div class="cell"><img src="svg/maven-films-horizontal-color.svg" style="filter:drop-shadow(3px 4px 3px rgba(0,0,0,.55))"></div><span class="x">✕</span><div class="cap">Sin sombras, brillos ni efectos</div></div>
+    <div class="dont"><div class="cell" style="background:repeating-linear-gradient(45deg,#E39B2D 0 8px,#C5CBD0 8px 16px)"><img src="svg/maven-films-horizontal-color.svg"></div><span class="x">✕</span><div class="cap">No sobre fondos que compiten</div></div>
+    <div class="dont"><div class="cell"><span style="font-size:19px;color:#E39B2D;font-weight:700;letter-spacing:.14em">MAVEN FILMS</span></div><span class="x">✕</span><div class="cap">Ámbar como texto / reescribir el wordmark</div></div>
+  </div>
+
+  <h2>9 · Archivos y contacto</h2>
+  <table>
+    <tr><td><b>svg/</b></td><td>Maestros vectoriales (color, reverso, negro, blanco, Petróleo; horizontal, apilado, símbolo, wordmark). Úsalos para impresión y rotulación.</td></tr>
+    <tr><td><b>png/</b></td><td>Raster transparente para documentos y redes (símbolos 1024 px, lockups 2400 px).</td></tr>
+    <tr><td><b>web/</b></td><td>favicon.ico, favicon.svg, íconos 16–512 px, apple-touch, maskable, site.webmanifest y head-snippet.</td></tr>
+  </table>
+  <p style="margin-top:6px"><b>Preguntas sobre uso de marca:</b> [nombre y correo del responsable de marca — pendiente de completar].</p>
+  <p class="lbl">Importante: las letras del wordmark están dibujadas a mano como paths, no son una fuente licenciada; un diseñador debería revisarlas antes de producción masiva. No se ha realizado búsqueda de marca registrada: se recomienda una consulta ante la SIC y una búsqueda por imagen antes de usar la marca comercialmente.</p>
+
+  <div class="foot"><span>Maven Films S.A.S. · Guía de uso de marca v1.0</span><span>2 / 2</span></div>
+</section>
+</body></html>

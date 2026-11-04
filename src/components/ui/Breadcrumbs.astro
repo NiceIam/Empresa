@@ -1,0 +1,22 @@
+---
+import Icon from '@/components/ui/Icon.astro';
+interface Props { items: { name: string; href: string }[]; class?: string }
+const { items, class: className = '' } = Astro.props;
+---
+
+<nav aria-label="Ruta de navegación" class={className}>
+  <ol class="flex flex-wrap items-center gap-1.5 text-sm text-white/60">
+    {
+      items.map((item, i) => (
+        <li class="flex items-center gap-1.5">
+          {i > 0 && <Icon name="chevron-right" class="size-3.5 text-white/35" />}
+          {i < items.length - 1 ? (
+            <a href={item.href} class="transition hover:text-white">{item.name}</a>
+          ) : (
+            <span aria-current="page" class="text-white/90">{item.name}</span>
+          )}
+        </li>
+      ))
+    }
+  </ol>
+</nav>
