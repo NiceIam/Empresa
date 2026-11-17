@@ -14,7 +14,7 @@ export const site = {
   nit: '',
   tagline: 'Películas para vidrio que protegen, enfrían y transforman',
   description:
-    'Películas para vidrio en Bogotá: control solar, nanocerámica, seguridad, esmerilado tipo sandblasting y vinilo decorativo. Visita técnica sin costo.',
+    'Películas para vidrio en Bogotá: control solar, nanocerámica, seguridad, esmerilado tipo sandblasting y vinilo decorativo. Visita técnica con muestras reales.',
   locale: 'es_CO',
   lang: 'es-CO',
   foundingYear: 2024,

@@ -11,7 +11,7 @@ const isActive = (href: string) => path.startsWith(href);
 <header
   id="site-header"
   data-scrolled="false"
-  class="group/header fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,backdrop-filter] duration-500 data-[scrolled=true]:bg-petroleo-950/85 data-[scrolled=true]:shadow-[0_10px_30px_-15px_rgb(0_0_0_/_0.5)] data-[scrolled=true]:backdrop-blur-xl"
+  class="group/header fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,backdrop-filter,translate] duration-500 data-[hidden=true]:-translate-y-full data-[scrolled=true]:bg-petroleo-950/85 data-[scrolled=true]:shadow-[0_10px_30px_-15px_rgb(0_0_0_/_0.5)] data-[scrolled=true]:backdrop-blur-xl"
 >
   <div class="container-page flex h-[4.5rem] items-center justify-between gap-6 lg:h-20">
     <a href="/" class="relative z-10 flex shrink-0 items-center" aria-label={`${site.name} — inicio`}>
@@ -83,12 +83,22 @@ const isActive = (href: string) => path.startsWith(href);
       </ul>
     </nav>
 
-    <div class="flex items-center gap-2">
-      <a href={`tel:${site.contact.phone}`} class="hidden items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-white/80 transition hover:text-white xl:flex">
+    <div class="flex items-center gap-1.5 sm:gap-2">
+      <button
+        type="button"
+        class="group flex items-center gap-2 rounded-full p-2.5 text-white/80 transition hover:bg-white/10 hover:text-white xl:border xl:border-white/15 xl:py-2 xl:pr-2.5 xl:pl-3.5"
+        aria-label="Buscar en el sitio (Ctrl + K)"
+        data-search-open
+      >
+        <Icon name="search" class="size-5 xl:size-4" />
+        <span class="hidden text-sm xl:inline">Buscar</span>
+        <kbd class="hidden rounded-md bg-white/10 px-1.5 py-0.5 font-sans text-[0.7rem] text-white/60 xl:inline">Ctrl K</kbd>
+      </button>
+      <a href={`tel:${site.contact.phone}`} class="hidden items-center gap-2 rounded-full px-3 py-2 text-sm font-medium text-white/80 transition hover:text-white 2xl:flex">
         <Icon name="phone" class="size-4" />
         {site.contact.phoneDisplay}
       </a>
-      <a href="/contacto/" class="btn btn-primary hidden !px-5 !py-2.5 text-sm sm:inline-flex">Cotizar gratis</a>
+      <a href="/contacto/" class="btn btn-primary hidden !px-5 !py-2.5 text-sm sm:inline-flex" data-quote>Cotizar gratis</a>
       <button
         type="button"
         id="menu-open"
@@ -112,6 +122,9 @@ const isActive = (href: string) => path.startsWith(href);
       </button>
     </div>
     <nav aria-label="Menú móvil" class="container-page flex-1 pt-4 pb-10">
+      <button type="button" class="mb-8 flex w-full items-center gap-3 rounded-2xl border border-white/15 bg-white/5 px-4 py-3.5 text-left text-white/60" data-search-open data-menu-search>
+        <Icon name="search" class="size-5" /> Buscar películas, guías, preguntas…
+      </button>
       <p class="eyebrow eyebrow-light mb-3">Películas</p>
       <ul class="grid gap-1">
         {
@@ -140,8 +153,8 @@ const isActive = (href: string) => path.startsWith(href);
       </ul>
     </nav>
     <div class="container-page sticky bottom-0 grid grid-cols-2 gap-3 border-t border-white/10 bg-petroleo-950 py-4">
-      <a href="/contacto/" class="btn btn-primary">Cotizar gratis</a>
-      <a href={whatsappUrl()} target="_blank" rel="noopener" class="btn btn-ghost-light"><Icon name="whatsapp" class="size-4" /> WhatsApp</a>
+      <a href="/contacto/" class="btn btn-primary" data-quote>Cotizar gratis</a>
+      <a href={whatsappUrl()} target="_blank" rel="noopener" class="btn btn-ghost-light" data-wa-dynamic data-wa-source="menu_movil"><Icon name="whatsapp" class="size-4" /> WhatsApp</a>
     </div>
   </div>
 </dialog>
@@ -204,9 +217,21 @@ const isActive = (href: string) => path.startsWith(href);
 
 <script>
   const header = document.getElementById('site-header')!;
-  const onScroll = () => header.setAttribute('data-scrolled', String(window.scrollY > 24));
+  // Fondo sólido al bajar; se oculta al bajar rápido y reaparece al subir (más pantalla útil).
+  let lastY = window.scrollY;
+  const onScroll = () => {
+    const y = window.scrollY;
+    header.setAttribute('data-scrolled', String(y > 24));
+    const menuOpen = !!document.querySelector('.nav-trigger[aria-expanded="true"]') || header.matches(':focus-within');
+    if (Math.abs(y - lastY) > 6) {
+      header.setAttribute('data-hidden', String(y > lastY && y > 480 && !menuOpen));
+      lastY = y;
+    }
+  };
   onScroll();
   window.addEventListener('scroll', onScroll, { passive: true });
+  // Si alguien navega con Tab hasta el encabezado oculto, se muestra.
+  header.addEventListener('focusin', () => header.setAttribute('data-hidden', 'false'));
 
   // Desplegables de escritorio: hover para ratón; clic/Enter para teclado; Escape y salir con Tab cierran.
   const triggers = document.querySelectorAll<HTMLButtonElement>('.nav-trigger');
@@ -245,5 +270,5 @@ const isActive = (href: string) => path.startsWith(href);
   });
   document.getElementById('menu-close')?.addEventListener('click', () => dialog.close());
   dialog.addEventListener('close', () => (document.body.style.overflow = ''));
-  dialog.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => dialog.close()));
+  dialog.querySelectorAll('a, [data-menu-search], [data-quote]').forEach((a) => a.addEventListener('click', () => dialog.close()));
 </script>

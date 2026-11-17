@@ -13,7 +13,8 @@ export default defineConfig({
   output: 'static', // Todas las páginas se pre-renderizan; solo /api/* corre en el servidor Node.
   // Límite de cuerpo de 64 KB: el formulario nunca necesita más y evita agotar memoria.
   adapter: node({ mode: 'standalone', bodySizeLimit: 64 * 1024 }),
-  prefetch: { prefetchAll: false, defaultStrategy: 'hover' },
+  // Precarga páginas al pasar el cursor (o al tocar en móvil): navegación casi instantánea.
+  prefetch: { prefetchAll: true, defaultStrategy: 'hover' },
   build: { format: 'directory', inlineStylesheets: 'auto' },
   image: { responsiveStyles: true },
   integrations: [

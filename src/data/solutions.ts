@@ -104,6 +104,7 @@ export const generalFaqs: Faq[] = [
   { q: '¿Tienen garantía?', a: 'Sí. Todas nuestras instalaciones tienen garantía escrita sobre el material y la mano de obra. El plazo depende de la película y te lo indicamos en la cotización.' },
   { q: '¿Hacen visitas técnicas fuera de Bogotá?', a: 'Atendemos Bogotá y municipios de la Sabana como Chía, Cajicá, Cota, Funza, Mosquera y La Calera. Para otras ciudades, escríbenos y evaluamos el proyecto.' },
   { q: '¿Cómo cotizo?', a: 'Envíanos por WhatsApp o el formulario el tipo de espacio, el problema que quieres resolver y, si es posible, fotos y medidas aproximadas. Te respondemos con una recomendación y agendamos la visita técnica.' },
+  { q: '¿La visita técnica tiene costo?', a: 'Sí. El valor varía según el caso y te lo confirmamos antes de agendarla, para que no haya sorpresas. Si quieres una primera orientación, envíanos fotos y medidas aproximadas por WhatsApp.' },
   { q: '¿La película sirve en vidrio templado o laminado?', a: 'Sí, en la mayoría de casos. En vidrios dobles (termopanel) o de gran formato evaluamos la absorción térmica para recomendar una película compatible y evitar estrés térmico.' },
 ];
 

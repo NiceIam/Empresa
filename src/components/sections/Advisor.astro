@@ -105,7 +105,8 @@ const steps: { key: string; title: string; options: { value: string; label: stri
           <p class="mt-2 leading-relaxed text-grafito/75" data-reason></p>
           <ul class="mt-6 grid gap-3" data-list></ul>
           <div class="mt-8 flex flex-wrap gap-3">
-            <a href="#" target="_blank" rel="noopener" class="btn btn-primary" data-wa><Icon name="whatsapp" class="size-4" /> Enviar a un asesor</a>
+            <a href="#" target="_blank" rel="noopener" class="btn bg-[#25D366] text-white" data-wa data-wa-source="asesor"><Icon name="whatsapp" class="size-4" /> Enviar a un asesor</a>
+            <a href="/contacto/" class="btn btn-primary" data-quote data-advisor-quote>Cotizar esta película <Icon name="arrow-right" class="size-4" /></a>
             <button type="button" class="restart btn btn-outline"><Icon name="rotate-ccw" class="size-4" /> Empezar de nuevo</button>
           </div>
         </div>
@@ -193,6 +194,11 @@ const steps: { key: string; title: string; options: { value: string; label: stri
     const names = slugs.map((s) => data.products[s]?.name).filter(Boolean).join(', ');
     const msg = `Hola Maven Films. Usé el asesor en línea: tengo un vidrio en ${labels[answers.space!]}, quiero ${labels[answers.need!]} y priorizo ${labels[answers.priority!]}. Me recomendó: ${names}. ¿Me ayudan a cotizar?`;
     result.querySelector<HTMLAnchorElement>('[data-wa]')!.href = `https://wa.me/${data.whatsapp}?text=${encodeURIComponent(msg)}`;
+    // «Cotizar esta película» abre el cotizador con la mejor opción ya elegida.
+    const best = data.products[slugs[0]];
+    const quoteBtn = result.querySelector<HTMLElement>('[data-advisor-quote]')!;
+    quoteBtn.dataset.quoteProduct = slugs[0];
+    quoteBtn.dataset.quoteLine = best?.url.split('/')[2] ?? '';
     result.querySelector<HTMLElement>('[data-headline]')!.focus();
   };
 

@@ -41,7 +41,7 @@ const offerSlugs = [...new Set(s.problems.flatMap((p) => p.products))];
 >
   <PageHero eyebrow={`Soluciones para ${s.name.toLowerCase()}`} title={s.h1} lead={s.lead} image={s.image} imageAlt={s.imageAlt} breadcrumbs={[breadcrumbs[0], breadcrumbs[2]]} size="lg">
     <div class="mt-10 flex flex-wrap gap-3">
-      <a href="/contacto/" class="btn btn-primary">Agendar visita técnica <Icon name="arrow-right" class="size-4" /></a>
+      <a href="/contacto/" class="btn btn-primary" data-quote>Agendar visita técnica <Icon name="arrow-right" class="size-4" /></a>
       <a href={whatsappUrl(waMsg)} target="_blank" rel="noopener" class="btn btn-ghost-light"><Icon name="whatsapp" class="size-4" /> WhatsApp</a>
     </div>
   </PageHero>

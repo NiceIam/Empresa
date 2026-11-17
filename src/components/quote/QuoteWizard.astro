@@ -1,0 +1,336 @@
+---
+/**
+ * Cotizador guiado (3 pasos, todos opcionales) que termina en WhatsApp con el mensaje armado,
+ * o en una solicitud de llamada vía /api/contacto/.
+ *
+ * - mode="dialog": panel lateral global (BaseLayout). Se abre con cualquier [data-quote] o el evento maven:quote.
+ * - mode="inline": incrustado en /contacto/. Sin JavaScript funciona como formulario normal.
+ */
+import Icon from '@/components/ui/Icon.astro';
+import { categories, productsIn } from '@/data/catalog';
+import { site } from '@/config/site';
+
+interface Props { mode: 'dialog' | 'inline'; uid: string }
+const { mode, uid } = Astro.props;
+const isDialog = mode === 'dialog';
+
+const lines = categories.map((c) => ({
+  slug: c.slug,
+  short: c.short,
+  icon: c.icon,
+  products: productsIn(c.slug).map((p) => ({ slug: p.slug, name: p.name, optionLabel: p.options?.label ?? '', options: p.options?.values ?? [] })),
+}));
+const allProducts = Object.fromEntries(lines.flatMap((l) => l.products.map((p) => [p.slug, p])));
+
+const spaces = [
+  { value: 'Casa o apartamento', icon: 'house' },
+  { value: 'Oficina o empresa', icon: 'building' },
+  { value: 'Local o vitrina', icon: 'store' },
+  { value: 'Edificio o conjunto', icon: 'layers' },
+] as const;
+
+const field =
+  'w-full rounded-xl border border-petroleo-900/15 bg-white px-4 py-3 text-[1rem] text-grafito outline-none transition placeholder:text-grafito/40 focus:border-petroleo-700 focus:ring-4 focus:ring-petroleo-500/10';
+const chip =
+  'relative flex cursor-pointer items-center gap-3 rounded-2xl border border-petroleo-900/12 bg-white p-3.5 text-[0.95rem] font-medium text-petroleo-900 transition hover:border-petroleo-900/40 has-checked:border-petroleo-900 has-checked:bg-petroleo-900 has-checked:text-white has-focus-visible:ring-2 has-focus-visible:ring-ambar-400';
+const pill =
+  'inline-flex cursor-pointer items-center rounded-full border border-petroleo-900/15 bg-white px-4 py-2 text-sm font-semibold text-petroleo-900 transition hover:border-petroleo-900/40 has-checked:border-ambar-400 has-checked:bg-ambar-400 has-checked:text-petroleo-950 has-focus-visible:ring-2 has-focus-visible:ring-petroleo-500';
+const stepTitle = 'font-display text-xl font-semibold text-petroleo-900 sm:text-2xl';
+---
+
+<div
+  class:list={['qw-root', isDialog ? 'flex h-full flex-col' : 'card overflow-hidden']}
+  data-qw
+  data-mode={mode}
+>
+  <script type="application/json" data-qw-data set:html={JSON.stringify({ lines: lines.map(({ slug, short }) => ({ slug, short })), products: allProducts, whatsapp: site.contact.whatsapp })} />
+
+  <!-- Encabezado -->
+  <div class:list={['shrink-0 border-b border-petroleo-900/10 bg-white px-5 pt-5 pb-4 sm:px-7', isDialog && 'sm:pt-6']}>
+    <div class="flex items-start justify-between gap-4">
+      <div>
+        <p class="font-display text-xl font-semibold text-petroleo-900 sm:text-2xl">{isDialog ? 'Cotiza en 1 minuto' : 'Arma tu cotización'}</p>
+        <p class="mt-1 flex items-center gap-2 text-sm text-grafito/65" data-hours>
+          <span class="hours-dot size-2 shrink-0 rounded-full bg-acero"></span>
+          <span data-hours-label>Respondemos rápido por WhatsApp</span>
+        </p>
+      </div>
+      {
+        isDialog && (
+          <button type="button" class="-mt-1 -mr-2 grid size-10 shrink-0 place-items-center rounded-full text-petroleo-900 transition hover:bg-concreto" data-qw-close aria-label="Cerrar cotizador">
+            <Icon name="x" class="size-5" />
+          </button>
+        )
+      }
+    </div>
+    <div class="js-only mt-5 flex items-center gap-3" aria-hidden="true">
+      <div class="flex flex-1 gap-1.5">
+        {[0, 1, 2].map((i) => <span class="h-1.5 flex-1 rounded-full bg-petroleo-900/10 transition-colors duration-500" data-qw-bar={i} />)}
+      </div>
+      <span class="text-xs font-semibold text-grafito/50 tabular-nums" data-qw-count>1 / 3</span>
+    </div>
+  </div>
+
+  <form
+    action="/api/contacto/"
+    method="post"
+    class:list={['qw-form', isDialog ? 'min-h-0 flex-1 overflow-y-auto overscroll-contain' : '']}
+    data-qw-form
+  >
+    <input type="hidden" name="page" value={Astro.url.pathname} />
+    <input type="hidden" name="windows" value="" data-qw-windows-field />
+
+    <!-- PASO 1: QUÉ -->
+    <fieldset class="qw-step px-5 py-6 sm:px-7" data-qw-step="0">
+      <legend class:list={[stepTitle, 'float-left w-full']}>¿Qué quieres cotizar?</legend>
+      <div class="clear-both grid grid-cols-2 gap-2.5 pt-5">
+        {
+          lines.map((l) => (
+            <label class={chip}>
+              <input type="radio" name="line" value={l.slug} class="sr-only" />
+              <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-concreto text-petroleo-900 transition group-has-checked:bg-ambar-400 [label:has(:checked)_&]:bg-ambar-400 [label:has(:checked)_&]:text-petroleo-950">
+                <Icon name={l.icon} class="size-[1.1rem]" />
+              </span>
+              <span class="leading-tight">{l.short}</span>
+            </label>
+          ))
+        }
+        <label class:list={[chip, 'col-span-2']}>
+          <input type="radio" name="line" value="" class="sr-only" />
+          <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-concreto text-petroleo-900 [label:has(:checked)_&]:bg-ambar-400 [label:has(:checked)_&]:text-petroleo-950">
+            <Icon name="lightbulb" class="size-[1.1rem]" />
+          </span>
+          <span class="leading-tight">Aún no lo sé, quiero asesoría</span>
+        </label>
+      </div>
+
+      {
+        lines.map((l) => (
+          <div class="qw-products mt-6" data-products-for={l.slug}>
+            <p class="text-sm font-semibold text-grafito/70">Película de {l.short.toLowerCase()}</p>
+            <div class="mt-3 flex flex-wrap gap-2">
+              {l.products.map((p) => (
+                <label class={pill}>
+                  <input type="radio" name="product" value={p.slug} class="sr-only" />
+                  {p.name}
+                </label>
+              ))}
+              <label class={pill}>
+                <input type="radio" name="product" value="" class="sr-only" />
+                Que me recomienden
+              </label>
+            </div>
+          </div>
+        ))
+      }
+
+      {
+        Object.values(allProducts)
+          .filter((p) => p.options.length > 1)
+          .map((p) => (
+            <div class="qw-options js-only mt-6" data-options-for={p.slug}>
+              <p class="text-sm font-semibold text-grafito/70">{p.optionLabel}</p>
+              <div class="mt-3 flex flex-wrap gap-2">
+                {p.options.map((o) => (
+                  <label class={pill}>
+                    <input type="radio" name="option" value={o} class="sr-only" />
+                    {o}
+                  </label>
+                ))}
+                <label class={pill}>
+                  <input type="radio" name="option" value="" class="sr-only" />
+                  No sé, que me asesoren
+                </label>
+              </div>
+            </div>
+          ))
+      }
+    </fieldset>
+
+    <!-- PASO 2: DÓNDE Y CUÁNTO -->
+    <fieldset class="qw-step px-5 py-6 sm:px-7" data-qw-step="1">
+      <legend class:list={[stepTitle, 'float-left w-full']}>¿Dónde lo vas a instalar?</legend>
+      <div class="clear-both grid grid-cols-2 gap-2.5 pt-5">
+        {
+          spaces.map((s) => (
+            <label class={chip}>
+              <input type="radio" name="space" value={s.value} class="sr-only" />
+              <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-concreto text-petroleo-900 [label:has(:checked)_&]:bg-ambar-400 [label:has(:checked)_&]:text-petroleo-950">
+                <Icon name={s.icon} class="size-[1.1rem]" />
+              </span>
+              <span class="leading-tight">{s.value}</span>
+            </label>
+          ))
+        }
+      </div>
+
+      <p class="mt-8 text-sm font-semibold text-grafito/70">Medidas</p>
+      <div class="js-only mt-3 grid gap-2 sm:grid-cols-2">
+        <label class={pill + ' justify-center !rounded-2xl !py-3 text-center'}>
+          <input type="radio" name="measure" value="visita" class="sr-only" checked />
+          Que las tomen en la visita
+        </label>
+        <label class={pill + ' justify-center !rounded-2xl !py-3 text-center'}>
+          <input type="radio" name="measure" value="propias" class="sr-only" />
+          Tengo las medidas
+        </label>
+      </div>
+      <p class="js-only mt-2 text-xs leading-relaxed text-grafito/60">La visita técnica tiene un costo que varía según el caso. Te lo confirmamos antes de agendarla.</p>
+
+      <!-- Calculadora de área (solo con JS) -->
+      <div class="js-only mt-4 hidden rounded-2xl border border-petroleo-900/10 bg-concreto/40 p-4" data-qw-calc>
+        <div class="grid grid-cols-[1fr_1fr_4.5rem_2rem] gap-2 px-1 text-xs font-semibold text-grafito/55">
+          <span>Ancho (cm)</span><span>Alto (cm)</span><span>Cant.</span><span></span>
+        </div>
+        <div class="mt-2 grid gap-2" data-qw-rows></div>
+        <template data-qw-row-tpl>
+          <div class="grid grid-cols-[1fr_1fr_4.5rem_2rem] items-center gap-2" data-qw-row>
+            <input type="number" inputmode="numeric" min="1" max="2000" placeholder="120" class={field + ' !px-3 !py-2.5'} aria-label="Ancho en centímetros" data-w />
+            <input type="number" inputmode="numeric" min="1" max="2000" placeholder="150" class={field + ' !px-3 !py-2.5'} aria-label="Alto en centímetros" data-h />
+            <input type="number" inputmode="numeric" min="1" max="200" value="1" class={field + ' !px-3 !py-2.5'} aria-label="Cantidad" data-q />
+            <button type="button" class="grid size-8 place-items-center rounded-full text-grafito/50 transition hover:bg-white hover:text-petroleo-900" aria-label="Quitar ventana" data-qw-remove>
+              <Icon name="x" class="size-4" />
+            </button>
+          </div>
+        </template>
+        <div class="mt-3 flex items-center justify-between gap-3">
+          <button type="button" class="inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-sm font-semibold text-petroleo-700 transition hover:bg-white" data-qw-add>
+            <Icon name="plus" class="size-4" /> Agregar ventana
+          </button>
+          <p class="text-sm text-grafito/70" aria-live="polite">Total: <strong class="font-display text-base text-petroleo-900" data-qw-total>0 m²</strong></p>
+        </div>
+      </div>
+
+      <!-- Sin JS: campo libre -->
+      <div class="no-js-only mt-3">
+        <label for={`${uid}-area`} class="sr-only">Área aproximada</label>
+        <input id={`${uid}-area`} name="area" type="text" maxlength="40" placeholder="Área aproximada, ej. 3 ventanas de 1,2 × 1,5 m" class={field} data-qw-area />
+      </div>
+    </fieldset>
+
+    <!-- PASO 3: CONTACTO -->
+    <fieldset class="qw-step px-5 py-6 sm:px-7" data-qw-step="2">
+      <legend class:list={[stepTitle, 'float-left w-full']}>¿A nombre de quién?</legend>
+      <div class="clear-both grid gap-3 pt-5 sm:grid-cols-2">
+        <div>
+          <label for={`${uid}-name`} class="mb-1.5 block text-sm font-medium text-grafito/70">Tu nombre</label>
+          <input id={`${uid}-name`} name="name" type="text" autocomplete="name" maxlength="80" placeholder="Ana Martínez" class={field} data-qw-name />
+        </div>
+        <div>
+          <label for={`${uid}-city`} class="mb-1.5 block text-sm font-medium text-grafito/70">Ciudad o barrio</label>
+          <input id={`${uid}-city`} name="city" type="text" autocomplete="address-level2" maxlength="60" placeholder="Bogotá, Cedritos" class={field} />
+        </div>
+        <div class="sm:col-span-2">
+          <label for={`${uid}-msg`} class="mb-1.5 block text-sm font-medium text-grafito/70">¿Algo más que debamos saber? <span class="font-normal text-grafito/45">(opcional)</span></label>
+          <textarea id={`${uid}-msg`} name="message" rows="2" maxlength="600" placeholder="Ej. sol fuerte en la tarde, segundo piso, vidrio doble…" class={field + ' resize-y'}></textarea>
+        </div>
+      </div>
+
+      <!-- Vista previa del mensaje (estilo chat) -->
+      <div class="js-only mt-6 rounded-2xl bg-[#efeae2] p-4" data-qw-preview-wrap>
+        <p class="mb-2 text-xs font-semibold text-grafito/55">Así llegará tu mensaje a WhatsApp</p>
+        <div class="ml-auto max-w-[92%] rounded-2xl rounded-tr-sm bg-[#d9fdd3] px-4 py-3 text-[0.9rem] leading-relaxed whitespace-pre-line text-[#111b21] shadow-sm" data-qw-preview></div>
+      </div>
+
+      <!-- Alternativa: que nos contacten (también es el camino sin JavaScript) -->
+      <div class="qw-callback mt-6 rounded-2xl border border-petroleo-900/10 p-4 sm:p-5" data-qw-callback>
+        <p class="font-display font-semibold text-petroleo-900">Prefiero que me llamen</p>
+        <p class="mt-1 text-sm text-grafito/65">Déjanos tu número y te contactamos en horario hábil.</p>
+        <div class="mt-4 grid gap-3 sm:grid-cols-2">
+          <div>
+            <label for={`${uid}-phone`} class="mb-1.5 block text-sm font-medium text-grafito/70">Celular *</label>
+            <input id={`${uid}-phone`} name="phone" type="tel" inputmode="tel" autocomplete="tel" required pattern="[0-9+\(\)\s\-]{7,20}" placeholder="300 123 4567" class={field} data-qw-cb />
+          </div>
+          <div>
+            <label for={`${uid}-email`} class="mb-1.5 block text-sm font-medium text-grafito/70">Correo <span class="font-normal text-grafito/45">(opcional)</span></label>
+            <input id={`${uid}-email`} name="email" type="email" autocomplete="email" maxlength="120" placeholder="ana@correo.com" class={field} data-qw-cb />
+          </div>
+        </div>
+        <label class="mt-4 flex items-start gap-3 text-sm leading-relaxed text-grafito/70">
+          <input type="checkbox" name="consent" value="1" required class="mt-0.5 size-5 shrink-0 cursor-pointer accent-petroleo-900" data-qw-cb />
+          <span>Autorizo el tratamiento de mis datos según la <a href="/politica-de-privacidad/" class="font-medium text-petroleo-700 underline underline-offset-2">política de datos</a> (Ley 1581 de 2012). *</span>
+        </label>
+        <!-- Trampa anti-spam -->
+        <div class="absolute -left-[9999px]" aria-hidden="true">
+          <label for={`${uid}-company`}>No llenar</label>
+          <input id={`${uid}-company`} name="company" type="text" tabindex="-1" autocomplete="off" />
+        </div>
+        <p class="mt-3 hidden rounded-xl bg-red-50 px-4 py-3 text-sm text-red-800" role="alert" data-qw-error></p>
+        <button type="submit" class="btn btn-dark mt-4 w-full sm:w-auto" data-qw-submit>
+          <span data-label>Solicitar llamada</span>
+          <span data-loading class="hidden">Enviando…</span>
+        </button>
+      </div>
+    </fieldset>
+  </form>
+
+  <!-- Navegación (solo con JS) -->
+  <div class="js-only shrink-0 border-t border-petroleo-900/10 bg-white px-5 py-4 sm:px-7" data-qw-nav>
+    <div class="flex items-center gap-3">
+      <button type="button" class="btn btn-outline !px-4" data-qw-back aria-label="Paso anterior">
+        <Icon name="arrow-left" class="size-4" />
+      </button>
+      <button type="button" class="btn btn-primary flex-1" data-qw-next>
+        Continuar <Icon name="arrow-right" class="size-4" />
+      </button>
+      <button type="button" class="btn flex-1 bg-[#25D366] text-white shadow-[0_10px_24px_-10px_rgb(37_211_102_/_0.8)] hover:bg-[#1fbe5b]" data-qw-wa hidden>
+        <Icon name="whatsapp" class="size-5" /> Enviar por WhatsApp
+      </button>
+    </div>
+    <button type="button" class="mt-3 flex w-full items-center justify-center gap-1.5 text-sm font-medium text-grafito/60 transition hover:text-petroleo-900" data-qw-skip>
+      <Icon name="whatsapp" class="size-4" /> Saltar e ir directo a WhatsApp
+    </button>
+  </div>
+
+  <!-- Confirmación -->
+  <div class="hidden flex-1 flex-col items-center justify-center px-6 py-12 text-center" data-qw-done tabindex="-1">
+    <div class="grid size-16 place-items-center rounded-full bg-ambar-400 text-petroleo-950">
+      <Icon name="check" class="size-8" strokeWidth={2.5} />
+    </div>
+    <p class="mt-6 font-display text-2xl font-semibold text-petroleo-900" data-done-title>¡Listo!</p>
+    <p class="mt-2 max-w-sm leading-relaxed text-grafito/70" data-done-text></p>
+    <a href="#" target="_blank" rel="noopener" class="btn mt-7 bg-[#25D366] text-white" data-done-wa data-no-track hidden><Icon name="whatsapp" class="size-5" /> Abrir WhatsApp</a>
+    <button type="button" class="mt-4 text-sm font-medium text-grafito/60 underline-offset-4 hover:underline" data-qw-restart>Hacer otra cotización</button>
+  </div>
+</div>
+
+<style>
+  /* Sin JS: todo visible como formulario normal. Con JS: pasos. */
+  :global(.no-js) .qw-root .js-only {
+    display: none !important;
+  }
+  :global(.js) .qw-root .no-js-only {
+    display: none !important;
+  }
+  :global(.js) .qw-root .qw-step:not(.is-current),
+  :global(.js) .qw-root .qw-products:not(.is-current),
+  :global(.js) .qw-root .qw-options:not(.is-current) {
+    display: none;
+  }
+  :global(.js) .qw-root .qw-step.is-current {
+    animation: qw-in 0.45s var(--ease-out-expo);
+  }
+  @keyframes qw-in {
+    from {
+      opacity: 0;
+      transform: translateX(14px);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    :global(.js) .qw-root .qw-step.is-current {
+      animation: none;
+    }
+  }
+  .qw-root [data-hours][data-open='true'] .hours-dot {
+    background: #25d366;
+    box-shadow: 0 0 0 4px rgb(37 211 102 / 0.2);
+  }
+  .qw-root [data-hours][data-open='false'] .hours-dot {
+    background: var(--color-ambar-400);
+  }
+</style>
+
+<script>
+  import { initQuoteWizards } from '@/scripts/quote-wizard';
+  initQuoteWizards();
+</script>

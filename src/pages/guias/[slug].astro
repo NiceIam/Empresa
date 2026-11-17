@@ -48,6 +48,9 @@ const breadcrumbs = [
     ...(d.faqs.length ? [faqSchema(d.faqs)] : []),
   ]}
 >
+  <!-- Progreso de lectura -->
+  <div class="reading-progress pointer-events-none fixed inset-x-0 top-0 z-[55] h-1 origin-left bg-ambar-400" aria-hidden="true" data-progress></div>
+
   <article>
     <header class="relative isolate overflow-hidden bg-petroleo-950 pt-32 pb-16 text-white lg:pt-40">
       <div class="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_60%_60%_at_80%_0%,rgb(47_99_118_/_0.4),transparent_70%)]"></div>
@@ -72,8 +75,23 @@ const breadcrumbs = [
     </div>
 
     <div class="container-page grid gap-12 py-16 lg:grid-cols-[1fr_17rem] lg:gap-16 lg:py-20">
-      <div class="prose-maven min-w-0">
-        <Content />
+      <div class="min-w-0">
+        <div class="prose-maven" data-article>
+          <Content />
+        </div>
+        <!-- Compartir: en Colombia las guías se comparten sobre todo por WhatsApp -->
+        <div class="mt-14 flex flex-wrap items-center gap-3 border-t border-petroleo-900/10 pt-8">
+          <p class="mr-2 font-display font-semibold text-petroleo-900">¿Le sirve a alguien más?</p>
+          <a href={`https://wa.me/?text=${encodeURIComponent(`${d.title} ${abs(url)}`)}`} target="_blank" rel="noopener" class="btn bg-[#25D366] !px-5 !py-2.5 text-sm text-white" data-no-track data-share-wa>
+            <Icon name="whatsapp" class="size-4" /> Compartir
+          </a>
+          <button type="button" class="btn btn-outline !px-5 !py-2.5 text-sm" data-copy-link={abs(url)}>
+            <Icon name="link" class="size-4" /> Copiar enlace
+          </button>
+          <button type="button" class="btn btn-outline hidden !px-5 !py-2.5 text-sm" data-native-share data-title={d.title} data-url={abs(url)}>
+            <Icon name="share-2" class="size-4" /> Más opciones
+          </button>
+        </div>
       </div>
 
       <aside class="space-y-6 lg:sticky lg:top-28 lg:self-start">
@@ -83,7 +101,7 @@ const breadcrumbs = [
               <p class="font-display text-sm font-semibold text-petroleo-900">En esta guía</p>
               <ol class="mt-4 space-y-2.5 text-sm">
                 {toc.map((h) => (
-                  <li><a href={`#${h.slug}`} class="toc-link block border-l-2 border-transparent pl-3 text-grafito/65 transition hover:border-ambar-400 hover:text-petroleo-900">{h.text}</a></li>
+                  <li><a href={`#${h.slug}`} class="toc-link block border-l-2 border-transparent pl-3 text-grafito/65 transition hover:border-ambar-400 hover:text-petroleo-900 aria-[current=true]:border-ambar-400 aria-[current=true]:font-semibold aria-[current=true]:text-petroleo-900" data-toc={h.slug}>{h.text}</a></li>
                 ))}
               </ol>
             </nav>
@@ -92,7 +110,7 @@ const breadcrumbs = [
         <div class="rounded-3xl bg-petroleo-900 p-6 text-white">
           <p class="font-display text-lg leading-snug font-semibold">¿Quieres una recomendación para tu caso?</p>
           <p class="mt-2 text-sm leading-relaxed text-white/70">Envíanos fotos de tus vidrios y te orientamos sin costo.</p>
-          <a href={whatsappUrl(`Hola Maven Films, leí la guía "${d.title}" y quiero asesoría.`)} target="_blank" rel="noopener" class="btn btn-primary mt-5 w-full !px-4 text-sm"><Icon name="whatsapp" class="size-4" /> Escribir por WhatsApp</a>
+          <a href={whatsappUrl(`Hola Maven Films, leí la guía "${d.title}" y quiero asesoría.`)} target="_blank" rel="noopener" class="btn btn-primary mt-5 w-full !px-4 text-sm" data-wa-source="guia_lateral"><Icon name="whatsapp" class="size-4" /> Escribir por WhatsApp</a>
         </div>
       </aside>
     </div>
@@ -115,7 +133,7 @@ const breadcrumbs = [
         <div class="container-page">
           <p class="eyebrow">Películas mencionadas</p>
           <h2 class="mt-4 text-3xl font-semibold">Productos relacionados</h2>
-          <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div class="rail mt-10 sm:grid-cols-2 lg:grid-cols-3">
             {related.map((p, i) => <ProductCard product={p} delay={i * 80} />)}
           </div>
         </div>
@@ -146,3 +164,79 @@ const breadcrumbs = [
 
   <CtaBand />
 </BaseLayout>
+
+<style>
+  /* Barra de progreso con animación ligada al scroll (sin JS donde el navegador lo soporta). */
+  .reading-progress {
+    transform: scaleX(0);
+  }
+  @supports (animation-timeline: scroll()) {
+    .reading-progress {
+      animation: progress linear both;
+      animation-timeline: scroll(root);
+    }
+    @keyframes progress {
+      to { transform: scaleX(1); }
+    }
+  }
+</style>
+
+<script>
+  import { toast, track } from '@/scripts/maven';
+
+  // Respaldo de la barra de progreso para navegadores sin animation-timeline.
+  const bar = document.querySelector<HTMLElement>('[data-progress]');
+  if (bar && !CSS.supports('animation-timeline: scroll()')) {
+    const update = () => {
+      const max = document.documentElement.scrollHeight - innerHeight;
+      bar.style.transform = `scaleX(${max > 0 ? scrollY / max : 0})`;
+    };
+    update();
+    addEventListener('scroll', update, { passive: true });
+  }
+
+  // Índice: marca la última sección cuyo título ya pasó el 25 % superior de la pantalla.
+  const links = new Map([...document.querySelectorAll<HTMLAnchorElement>('[data-toc]')].map((a) => [a.dataset.toc!, a]));
+  const heads = [...document.querySelectorAll<HTMLElement>('[data-article] h2[id]')];
+  if (links.size && heads.length) {
+    let current = '';
+    let ticking = false;
+    const updateToc = () => {
+      ticking = false;
+      const line = innerHeight * 0.25;
+      let id = heads[0].id;
+      for (const h of heads) if (h.getBoundingClientRect().top <= line) id = h.id;
+      if (id === current) return;
+      current = id;
+      links.forEach((a, key) => a.setAttribute('aria-current', String(key === id)));
+    };
+    updateToc();
+    addEventListener('scroll', () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(updateToc);
+      }
+    }, { passive: true });
+  }
+
+  document.querySelector('[data-share-wa]')?.addEventListener('click', () => track('share', { method: 'whatsapp' }));
+
+  // Copiar enlace y compartir nativo.
+  document.querySelector<HTMLButtonElement>('[data-copy-link]')?.addEventListener('click', async (e) => {
+    const url = (e.currentTarget as HTMLElement).dataset.copyLink!;
+    try {
+      await navigator.clipboard.writeText(url);
+      toast('Enlace copiado');
+      track('share', { method: 'copy' });
+    } catch {
+      prompt('Copia el enlace:', url);
+    }
+  });
+  const share = document.querySelector<HTMLButtonElement>('[data-native-share]');
+  if (share && 'share' in navigator) {
+    share.classList.remove('hidden');
+    share.addEventListener('click', () => {
+      navigator.share({ title: share.dataset.title, url: share.dataset.url }).then(() => track('share', { method: 'native' })).catch(() => {});
+    });
+  }
+</script>

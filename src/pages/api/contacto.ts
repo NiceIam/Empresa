@@ -19,7 +19,11 @@ const schema = z.object({
   email: z.union([z.literal(''), z.string().trim().email('Revisa tu correo electrónico.').max(120)]).optional(),
   city: z.string().trim().max(60).optional(),
   space: z.string().trim().max(40).optional(),
-  area: z.string().trim().max(40).optional(),
+  area: z.string().trim().max(60).optional(),
+  windows: z.string().trim().max(400).optional(),
+  line: z.string().trim().max(40).optional(),
+  product: z.string().trim().max(80).optional(),
+  option: z.string().trim().max(40).optional(),
   message: z.string().trim().max(1500).optional(),
   interest: z.array(z.string().trim().max(40)).max(10).optional(),
   page: z.string().trim().max(200).optional(),
@@ -72,7 +76,9 @@ async function deliver(data: z.infer<typeof schema>) {
     ['Ciudad', data.city || '—'],
     ['Espacio', data.space || '—'],
     ['Área aprox.', data.area || '—'],
-    ['Interés', data.interest?.join(', ') || '—'],
+    ['Medidas', data.windows || '—'],
+    ['Interés', data.interest?.join(', ') || data.line || '—'],
+    ['Película', [data.product, data.option].filter(Boolean).join(' — ') || '—'],
     ['Mensaje', data.message || '—'],
     ['Página', data.page || '—'],
   ] as const;
@@ -112,7 +118,8 @@ export const POST: APIRoute = async (context) => {
       ? new Response(JSON.stringify(body), { status, headers: { 'Content-Type': 'application/json' } })
       : status === 200
         ? redirect('/gracias/', 303)
-        : redirect(`/contacto/?error=${encodeURIComponent(String(body.error ?? 'Revisa los datos del formulario.'))}#quote-form`, 303);
+        : // Código fijo en la URL (no texto libre) para que nadie pueda fabricar enlaces con mensajes falsos.
+          redirect(`/contacto/?error=${status === 429 ? 'limite' : status >= 500 ? 'servidor' : 'datos'}#cotizar`, 303);
 
   const ip = clientIp(context);
   // Sin IP identificable no se limita (un balde compartido bloquearía a todos los visitantes).

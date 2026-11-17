@@ -1,0 +1,248 @@
+---
+/**
+ * Contacto siempre a mano.
+ * - Escritorio: botón flotante de WhatsApp con panel tipo chat (estado de atención + respuestas rápidas).
+ * - Móvil: barra inferior fija con WhatsApp directo (cero fricción) y el cotizador.
+ * - Avisos (toast) globales.
+ */
+import Icon from '@/components/ui/Icon.astro';
+import { site, whatsappUrl } from '@/config/site';
+
+interface Props { message?: string }
+const { message } = Astro.props;
+const quick = [
+  { label: 'Cotizar control solar', text: 'Hola Maven Films, quiero cotizar películas de control solar para mis ventanas.', icon: 'sun' },
+  { label: 'Película de seguridad', text: 'Hola Maven Films, quiero cotizar película de seguridad para vidrios.', icon: 'shield-check' },
+  { label: 'Esmerilado o sandblasting', text: 'Hola Maven Films, quiero cotizar película esmerilada (efecto sandblasting).', icon: 'sparkles' },
+  { label: 'Vinilo o decorativas', text: 'Hola Maven Films, quiero cotizar vinilo o película decorativa para vidrio.', icon: 'palette' },
+  { label: 'Tengo otra pregunta', text: 'Hola Maven Films, tengo una pregunta.', icon: 'message-circle' },
+] as const;
+---
+
+<!-- ═══ Escritorio: botón + panel tipo chat ═══ -->
+<div class="dock fixed right-6 bottom-6 z-40 hidden lg:block" data-dock>
+  <div
+    id="dock-panel"
+    class="dock-panel absolute right-0 bottom-[calc(100%+1rem)] w-[23rem] origin-bottom-right overflow-hidden rounded-3xl bg-white shadow-[0_30px_80px_-20px_rgb(9_30_38_/_0.45)] ring-1 ring-petroleo-900/10"
+    role="dialog"
+    aria-label="Escríbenos por WhatsApp"
+    data-dock-panel
+    hidden
+  >
+    <div class="flex items-center gap-3 bg-petroleo-900 px-5 py-4 text-white">
+      <span class="relative grid size-11 place-items-center rounded-full bg-white">
+        <img src="/brand/maven-films-simbolo-color.svg" alt="" width="28" height="28" class="size-7" />
+        <span class="hours-dot absolute right-0 bottom-0 size-3 rounded-full bg-acero ring-2 ring-petroleo-900" data-hours-dot></span>
+      </span>
+      <span class="min-w-0 flex-1">
+        <span class="block font-display font-semibold">{site.name}</span>
+        <span class="block truncate text-xs text-white/70" data-hours><span data-hours-label>Asesoría por WhatsApp</span></span>
+      </span>
+      <button type="button" class="grid size-9 place-items-center rounded-full text-white/80 transition hover:bg-white/10 hover:text-white" aria-label="Cerrar" data-dock-close>
+        <Icon name="x" class="size-5" />
+      </button>
+    </div>
+    <div class="bg-[#efeae2] px-4 py-5">
+      <p class="max-w-[85%] rounded-2xl rounded-tl-sm bg-white px-4 py-3 text-[0.925rem] leading-relaxed text-[#111b21] shadow-sm">
+        ¡Hola! 👋 Cuéntanos qué necesitas y te asesoramos por WhatsApp. Elige una opción:
+      </p>
+      <ul class="mt-4 grid gap-2">
+        <li data-dock-context hidden>
+          <a href={whatsappUrl(message)} target="_blank" rel="noopener" class="flex items-center gap-3 rounded-2xl bg-ambar-400 px-4 py-3 text-sm font-semibold text-petroleo-950 shadow-sm transition hover:bg-ambar-300" data-wa-dynamic data-wa-source="dock_contexto">
+            <Icon name="sparkles" class="size-4" /><span data-dock-context-label>Cotizar lo que estoy viendo</span>
+          </a>
+        </li>
+        {
+          quick.map((q) => (
+            <li>
+              <a href={whatsappUrl(q.text)} target="_blank" rel="noopener" class="flex items-center gap-3 rounded-2xl bg-white px-4 py-3 text-sm font-medium text-petroleo-900 shadow-sm transition hover:bg-petroleo-900 hover:text-white" data-wa-source="dock_rapido">
+                <Icon name={q.icon} class="size-4 shrink-0" />
+                {q.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+    <div class="grid gap-2 p-4">
+      <button type="button" class="btn btn-outline w-full !py-3 text-sm" data-quote data-dock-quote>
+        <Icon name="clipboard-check" class="size-4" /> Armar cotización detallada
+      </button>
+    </div>
+  </div>
+
+  <!-- Invitación suave (una vez por sesión) -->
+  <div class="dock-teaser absolute right-[calc(100%+0.75rem)] bottom-2 hidden w-64 rounded-2xl bg-white p-4 pr-9 text-sm leading-snug text-petroleo-900 shadow-[0_20px_50px_-15px_rgb(9_30_38_/_0.4)] ring-1 ring-petroleo-900/10" data-dock-teaser>
+    <button type="button" class="absolute top-2 right-2 grid size-7 place-items-center rounded-full text-grafito/50 hover:bg-concreto" aria-label="Cerrar invitación" data-teaser-close>
+      <Icon name="x" class="size-3.5" />
+    </button>
+    <p class="font-semibold">¿Te ayudamos a elegir?</p>
+    <p class="mt-1 text-grafito/70">Escríbenos y te recomendamos la película ideal para tus vidrios.</p>
+  </div>
+
+  <button
+    type="button"
+    class="group relative grid size-16 place-items-center rounded-full bg-[#25D366] text-white shadow-[0_14px_36px_-8px_rgb(37_211_102_/_0.65)] transition-transform duration-300 ease-out-expo hover:scale-105"
+    aria-expanded="false"
+    aria-controls="dock-panel"
+    aria-label="Escríbenos por WhatsApp"
+    data-dock-toggle
+  >
+    <span class="absolute inset-0 -z-10 animate-ping rounded-full bg-[#25D366]/35 [animation-duration:2.8s] motion-reduce:hidden"></span>
+    <span class="dock-icon-open"><Icon name="whatsapp" class="size-8" /></span>
+    <span class="dock-icon-close absolute"><Icon name="x" class="size-7" /></span>
+  </button>
+</div>
+
+<!-- ═══ Móvil: barra inferior ═══ -->
+<div inert class="mobile-bar fixed inset-x-0 bottom-0 z-40 border-t border-petroleo-900/10 bg-white/90 px-4 pt-3 pb-[calc(0.75rem+env(safe-area-inset-bottom))] backdrop-blur-xl lg:hidden" data-mobile-bar>
+  <div class="mx-auto flex max-w-lg gap-2.5">
+    <a href={whatsappUrl(message)} target="_blank" rel="noopener" class="btn flex-1 bg-[#25D366] !py-3.5 text-white shadow-[0_10px_24px_-10px_rgb(37_211_102_/_0.8)]" data-wa-dynamic data-wa-source="barra_movil">
+      <Icon name="whatsapp" class="size-5" /> WhatsApp
+    </a>
+    <a href="/contacto/" class="btn btn-primary flex-1 !py-3.5" data-quote>
+      Cotizar <Icon name="arrow-right" class="size-4" />
+    </a>
+  </div>
+</div>
+
+<!-- ═══ Avisos ═══ -->
+<div class="pointer-events-none fixed inset-x-0 bottom-24 z-[60] flex justify-center px-4 lg:bottom-8" aria-live="polite" data-toast-host></div>
+
+<style>
+  .dock-panel:not([hidden]) {
+    animation: dock-in 0.35s var(--ease-out-expo);
+  }
+  @keyframes dock-in {
+    from { opacity: 0; transform: translateY(12px) scale(0.96); }
+  }
+  .dock-icon-close { opacity: 0; transform: rotate(-90deg) scale(0.6); transition: all 0.35s var(--ease-out-expo); }
+  .dock-icon-open { transition: all 0.35s var(--ease-out-expo); }
+  [aria-expanded='true'] .dock-icon-close { opacity: 1; transform: none; }
+  [aria-expanded='true'] .dock-icon-open { opacity: 0; transform: rotate(90deg) scale(0.6); }
+  [aria-expanded='true'] .animate-ping { display: none; }
+
+  [data-hours-dot][data-open='true'] { background: #25d366; }
+  [data-hours-dot][data-open='false'] { background: var(--color-ambar-400); }
+
+  .dock-teaser.is-visible { display: block; animation: dock-in 0.5s var(--ease-out-expo); }
+
+  /* La barra móvil aparece después del primer pantallazo para no tapar el hero. */
+  .mobile-bar {
+    transform: translateY(110%);
+    transition: transform 0.45s var(--ease-out-expo);
+  }
+  .mobile-bar.is-visible { transform: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .mobile-bar, .dock-icon-close, .dock-icon-open { transition: none; }
+  }
+</style>
+
+<script>
+  import { paintHours, hoursStatus, track, waUrl, getContext, type QuoteContext } from '@/scripts/maven';
+
+  paintHours();
+  const status = hoursStatus();
+  document.querySelectorAll<HTMLElement>('[data-hours-dot]').forEach((d) => (d.dataset.open = String(status.open)));
+
+  /* Panel de escritorio */
+  const dock = document.querySelector<HTMLElement>('[data-dock]');
+  const panel = document.querySelector<HTMLElement>('[data-dock-panel]');
+  const toggle = document.querySelector<HTMLButtonElement>('[data-dock-toggle]');
+  const teaser = document.querySelector<HTMLElement>('[data-dock-teaser]');
+  const setOpen = (open: boolean) => {
+    if (!panel || !toggle) return;
+    panel.hidden = !open;
+    toggle.setAttribute('aria-expanded', String(open));
+    if (open) {
+      teaser?.classList.remove('is-visible');
+      track('dock_open');
+      panel.querySelector<HTMLElement>('a, button')?.focus({ preventScroll: true });
+    }
+  };
+  toggle?.addEventListener('click', () => setOpen(panel?.hidden ?? false));
+  document.querySelector('[data-dock-close]')?.addEventListener('click', () => {
+    setOpen(false);
+    toggle?.focus();
+  });
+  document.querySelector('[data-dock-quote]')?.addEventListener('click', () => setOpen(false));
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && panel && !panel.hidden) {
+      setOpen(false);
+      toggle?.focus();
+    }
+  });
+  document.addEventListener('click', (e) => {
+    if (dock && panel && !panel.hidden && !dock.contains(e.target as Node)) setOpen(false);
+  });
+
+  /* Invitación: una vez por sesión, tras 25 s y si la persona ya bajó un poco. */
+  const seen = (() => {
+    try {
+      return sessionStorage.getItem('mf-teaser') === '1';
+    } catch {
+      return true;
+    }
+  })();
+  if (teaser && !seen && window.matchMedia('(min-width: 1024px)').matches) {
+    setTimeout(() => {
+      if (panel?.hidden && window.scrollY > window.innerHeight * 0.6) {
+        teaser.classList.add('is-visible');
+        try {
+          sessionStorage.setItem('mf-teaser', '1');
+        } catch {
+          /* almacenamiento bloqueado */
+        }
+      }
+    }, 25000);
+    teaser.addEventListener('click', (e) => {
+      teaser.classList.remove('is-visible');
+      if (!(e.target as HTMLElement).closest('[data-teaser-close]')) setOpen(true);
+    });
+  }
+
+  /* Barra móvil: visible tras el primer pantallazo. */
+  const bar = document.querySelector<HTMLElement>('[data-mobile-bar]');
+  if (bar) {
+    // Mientras está fuera de pantalla es «inert»: no recibe foco ni lo leen los lectores de pantalla.
+    const onScroll = () => {
+      const show = window.scrollY > window.innerHeight * 0.55;
+      bar.classList.toggle('is-visible', show);
+      bar.inert = !show;
+    };
+    onScroll();
+    window.addEventListener('scroll', onScroll, { passive: true });
+  }
+
+  /* Enlaces de WhatsApp que siguen el contexto de la página (producto y tono elegidos). */
+  const applyContext = (ctx: QuoteContext) => {
+    if (!ctx.message) return;
+    document.querySelectorAll<HTMLAnchorElement>('[data-wa-dynamic]').forEach((a) => (a.href = waUrl(ctx.message)));
+    const item = document.querySelector<HTMLElement>('[data-dock-context]');
+    const label = document.querySelector<HTMLElement>('[data-dock-context-label]');
+    if (item && label && ctx.product) {
+      item.hidden = false;
+      label.textContent = ctx.message.replace(/^Hola Maven Films,?\s*/i, '').replace(/^quiero cotizar\s*/i, 'Cotizar ').replace(/\.$/, '');
+    }
+  };
+  applyContext(getContext());
+  document.addEventListener('maven:context', (e) => applyContext((e as CustomEvent<QuoteContext>).detail));
+
+  /* Medición de todos los clics a WhatsApp. */
+  document.addEventListener('click', (e) => {
+    const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[href*="wa.me/"]');
+    if (!a || a.hasAttribute('data-no-track')) return;
+    track('whatsapp_click', { source: a.dataset.waSource ?? 'enlace', ...getContext() });
+  });
+
+  /* Avisos */
+  const host = document.querySelector<HTMLElement>('[data-toast-host]');
+  document.addEventListener('maven:toast', (e) => {
+    if (!host) return;
+    const el = document.createElement('div');
+    el.className = 'toast pointer-events-auto rounded-full bg-petroleo-900 px-5 py-3 text-sm font-medium text-white shadow-2xl';
+    el.textContent = String((e as CustomEvent).detail);
+    host.replaceChildren(el);
+    setTimeout(() => el.remove(), 2600);
+  });
+</script>

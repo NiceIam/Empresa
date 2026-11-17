@@ -7,7 +7,7 @@ import fachada from '@/assets/images/fachada-azul.jpg';
 
 interface Props { title?: string; text?: string; whatsappMessage?: string }
 const {
-  title = 'Agenda tu visita técnica <span class="text-ambar-300">sin costo</span>',
+  title = 'Decide viendo el resultado <span class="text-ambar-300">en tu vidrio</span>',
   text = 'Llevamos muestras reales a tu espacio, medimos y te entregamos una propuesta clara. Sin compromiso.',
   whatsappMessage,
 } = Astro.props;
@@ -29,8 +29,8 @@ const {
       <h2 class="text-3xl leading-tight font-semibold !text-white sm:text-[2.75rem]" set:html={title} />
       <p class="mt-5 text-lg leading-relaxed text-white/75">{text}</p>
       <div class="mt-9 flex flex-wrap gap-3">
-        <a href="/contacto/" class="btn btn-primary">Solicitar cotización <Icon name="arrow-right" class="size-4" /></a>
-        <a href={whatsappUrl(whatsappMessage)} target="_blank" rel="noopener" class="btn btn-ghost-light"><Icon name="whatsapp" class="size-4" /> Escribir por WhatsApp</a>
+        <a href="/contacto/" class="btn btn-primary" data-quote>Solicitar cotización <Icon name="arrow-right" class="size-4" /></a>
+        <a href={whatsappUrl(whatsappMessage)} target="_blank" rel="noopener" class="btn btn-ghost-light" data-wa-dynamic data-wa-source="cta_banda"><Icon name="whatsapp" class="size-4" /> Escribir por WhatsApp</a>
       </div>
     </div>
   </div>

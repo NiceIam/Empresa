@@ -6,7 +6,9 @@ import { site } from '@/config/site';
 import { abs, organizationSchema, localBusinessSchema, websiteSchema, breadcrumbSchema } from '@/lib/schema';
 import Header from '@/components/layout/Header.astro';
 import Footer from '@/components/layout/Footer.astro';
-import WhatsAppFab from '@/components/layout/WhatsAppFab.astro';
+import ContactDock from '@/components/layout/ContactDock.astro';
+import SearchPalette from '@/components/layout/SearchPalette.astro';
+import QuoteWizard from '@/components/quote/QuoteWizard.astro';
 import Analytics from '@/components/layout/Analytics.astro';
 import soraWoff2 from '@fontsource-variable/sora/files/sora-latin-wght-normal.woff2?url';
 import interWoff2 from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
@@ -25,6 +27,8 @@ interface Props {
   schema?: Record<string, unknown>[];
   article?: { published: Date; updated?: Date; section?: string };
   whatsappMessage?: string;
+  /** Contexto para el cotizador y los mensajes de WhatsApp (línea y producto de la página). */
+  quote?: { line?: string; product?: string; option?: string };
   /** Si es true, el título no lleva el sufijo de marca. */
   rawTitle?: boolean;
 }
@@ -40,8 +44,10 @@ const {
   schema = [],
   article,
   whatsappMessage,
+  quote,
   rawTitle = false,
 } = Astro.props;
+const pageContext = { ...quote, message: whatsappMessage };
 
 // El sufijo de marca solo se agrega si el título completo cabe en ~65 caracteres (lo que Google muestra).
 const suffix = ` | ${site.name}`;
@@ -85,6 +91,7 @@ const { integrations } = site;
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <script is:inline>document.documentElement.classList.replace('no-js', 'js');</script>
+    <script is:inline define:vars={{ pageContext }}>window.__mavenCtx = pageContext;</script>
 
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
@@ -144,7 +151,11 @@ const { integrations } = site;
       <slot />
     </main>
     <Footer />
-    <WhatsAppFab message={whatsappMessage} />
+    <ContactDock message={whatsappMessage} />
+    <SearchPalette />
+    <dialog id="quote-dialog" class="quote-dialog" aria-label="Cotizador">
+      <QuoteWizard mode="dialog" uid="qd" />
+    </dialog>
 
     <script>
       // Revelado progresivo al hacer scroll.

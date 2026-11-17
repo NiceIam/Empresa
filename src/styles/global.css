@@ -113,6 +113,10 @@
   .btn-ghost-light {
     @apply border border-white/25 bg-white/5 text-white backdrop-blur-md hover:border-white/50 hover:bg-white/10;
   }
+  /* Verde de WhatsApp con texto oscuro: el blanco sobre #25D366 no alcanza contraste AA (1.98:1). */
+  .btn-whatsapp {
+    @apply bg-[#25D366] text-petroleo-950 shadow-[0_8px_24px_-8px_rgb(37_211_102_/_0.55)] hover:bg-[#3EE07B] hover:shadow-[0_12px_32px_-8px_rgb(37_211_102_/_0.65)];
+  }
   .btn-outline { @apply border border-petroleo-900/20 text-petroleo-900 hover:border-petroleo-900 hover:bg-petroleo-900 hover:text-white; }
 
   .glass {
@@ -123,6 +127,33 @@
   .card {
     @apply rounded-[var(--radius-glass)] border border-petroleo-900/8 bg-white;
     box-shadow: var(--shadow-card);
+  }
+
+  /* Carrusel horizontal en móvil (deslizable con «snap»); cuadrícula desde sm. */
+  .rail {
+    display: flex;
+    gap: 1rem;
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    scroll-padding-inline: 1.25rem;
+    margin-inline: -1.25rem;
+    padding: 0.25rem 1.25rem 1rem;
+    scrollbar-width: none;
+  }
+  .rail::-webkit-scrollbar { display: none; }
+  .rail > * {
+    flex: 0 0 82%;
+    scroll-snap-align: start;
+  }
+  @media (min-width: 640px) {
+    .rail {
+      display: grid;
+      gap: 1.5rem;
+      overflow: visible;
+      margin-inline: 0;
+      padding: 0;
+    }
+    .rail > * { flex: initial; }
   }
 
   .link-underline {
@@ -157,6 +188,73 @@
   .prose-maven td { @apply border-b border-petroleo-900/10 px-4 py-3 align-top; }
   .prose-maven tbody tr:nth-child(even) { @apply bg-concreto/40; }
   .prose-maven .table-wrap { @apply overflow-x-auto rounded-2xl border border-petroleo-900/10; }
+}
+
+/* ─── Cotizador: cajón lateral (escritorio) / hoja inferior (móvil) ──────── */
+.quote-dialog {
+  position: fixed;
+  inset: auto 0 0 0;
+  margin: 0;
+  width: 100%;
+  max-width: 100%;
+  height: 92dvh;
+  max-height: 92dvh;
+  padding: 0;
+  border: 0;
+  border-radius: 1.75rem 1.75rem 0 0;
+  background: var(--color-blanco-roto);
+  box-shadow: 0 -20px 60px -20px rgb(9 30 38 / 0.5);
+  overflow: hidden;
+}
+.quote-dialog::backdrop {
+  background: rgb(9 30 38 / 0.55);
+  backdrop-filter: blur(4px);
+}
+.quote-dialog[open] {
+  display: flex;
+  flex-direction: column;
+  animation: sheet-up 0.5s var(--ease-out-expo);
+}
+.quote-dialog > .qw-root {
+  flex: 1;
+  min-height: 0;
+}
+@media (min-width: 640px) {
+  .quote-dialog {
+    inset: 0 0 0 auto;
+    width: min(36rem, 100vw);
+    height: 100dvh;
+    max-height: 100dvh;
+    border-radius: 1.75rem 0 0 1.75rem;
+    box-shadow: -20px 0 60px -20px rgb(9 30 38 / 0.5);
+  }
+  .quote-dialog[open] {
+    animation: drawer-in 0.5s var(--ease-out-expo);
+  }
+}
+@keyframes sheet-up {
+  from { transform: translateY(100%); }
+}
+@keyframes drawer-in {
+  from { transform: translateX(100%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .quote-dialog[open] { animation: none; }
+}
+
+/* Sin JavaScript, el buscador no funciona: se ocultan sus botones. */
+.no-js [data-search-open] { display: none !important; }
+
+/* Espacio para la barra fija de contacto en móvil. */
+@media (max-width: 1023.98px) {
+  body > footer { padding-bottom: calc(5.5rem + env(safe-area-inset-bottom)); }
+}
+
+.toast {
+  animation: toast-in 0.4s var(--ease-out-expo);
+}
+@keyframes toast-in {
+  from { opacity: 0; transform: translateY(10px); }
 }
 
 @utility bg-grain {

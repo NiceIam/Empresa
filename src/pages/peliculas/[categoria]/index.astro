@@ -48,6 +48,7 @@ const waMsg = `Hola Maven Films, quiero cotizar ${c.name.toLowerCase()}.`;
   imageAlt={c.imageAlt}
   breadcrumbs={breadcrumbs}
   whatsappMessage={waMsg}
+  quote={{ line: c.slug }}
   schema={[
     serviceSchema({
       name: c.name,
@@ -62,8 +63,8 @@ const waMsg = `Hola Maven Films, quiero cotizar ${c.name.toLowerCase()}.`;
 >
   <PageHero eyebrow={c.eyebrow} title={c.h1} lead={c.lead} image={c.heroImage} imageAlt={c.imageAlt} breadcrumbs={breadcrumbs} size="lg">
     <div class="mt-10 flex flex-wrap gap-3">
-      <a href={`/contacto/?linea=${c.slug}`} class="btn btn-primary">Cotizar {c.short.toLowerCase()} <Icon name="arrow-right" class="size-4" /></a>
-      <a href={whatsappUrl(waMsg)} target="_blank" rel="noopener" class="btn btn-ghost-light"><Icon name="whatsapp" class="size-4" /> Asesoría por WhatsApp</a>
+      <a href={`/contacto/?linea=${c.slug}`} class="btn btn-primary" data-quote>Cotizar {c.short.toLowerCase()} <Icon name="arrow-right" class="size-4" /></a>
+      <a href={whatsappUrl(waMsg)} target="_blank" rel="noopener" class="btn btn-ghost-light" data-wa-source="linea_hero"><Icon name="whatsapp" class="size-4" /> Asesoría por WhatsApp</a>
     </div>
     <ul class="mt-12 flex flex-wrap gap-x-8 gap-y-3 text-sm text-white/75">
       {c.benefits.map((b) => <li class="flex items-center gap-2"><Icon name={b.icon} class="size-4 text-ambar-300" />{b.title}</li>)}
@@ -145,9 +146,10 @@ const waMsg = `Hola Maven Films, quiero cotizar ${c.name.toLowerCase()}.`;
   }
 
   {c.slug === 'control-solar' && <ToneSimulator />}
+  {(c.slug === 'decorativas' || c.slug === 'sandblasting') && <ToneSimulator mode="privacy" />}
 
   <!-- FAQ -->
-  <section class="bg-white py-24 lg:py-28">
+  <section class="scroll-mt-24 bg-white py-24 lg:py-28" id="preguntas">
     <div class="container-page grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
       <SectionHeading eyebrow="Preguntas frecuentes" title={`Dudas sobre ${c.short.toLowerCase()}`} />
       <FaqList faqs={c.faqs} />
@@ -159,7 +161,7 @@ const waMsg = `Hola Maven Films, quiero cotizar ${c.name.toLowerCase()}.`;
       <section class="py-24 lg:py-28">
         <div class="container-page">
           <SectionHeading eyebrow="Guías relacionadas" title="Aprende antes de decidir" />
-          <div class="mt-12 grid gap-6 md:grid-cols-3">
+          <div class="rail mt-12 sm:grid-cols-2 md:grid-cols-3">
             {guides.map((g, i) => (
               <article class="group relative card overflow-hidden" data-reveal style={`--reveal-delay:${i * 80}`}>
                 <div class="aspect-[16/10] overflow-hidden">

@@ -1,0 +1,230 @@
+---
+/**
+ * Buscador global (⌘K / Ctrl+K o «/»). Busca en películas, líneas, guías y preguntas frecuentes.
+ * Ignora tildes y mayúsculas, y entiende sinónimos (polarizado, arenado, antirrobo…).
+ */
+import Icon from '@/components/ui/Icon.astro';
+import { whatsappUrl } from '@/config/site';
+---
+
+<dialog id="search-dialog" class="search-dialog m-0 h-dvh max-h-none w-full max-w-none bg-transparent p-0 sm:h-auto" aria-label="Buscar en el sitio">
+  <div class="search-panel mx-auto flex h-full max-w-2xl flex-col overflow-hidden bg-white shadow-2xl sm:mt-[10vh] sm:h-auto sm:max-h-[75vh] sm:rounded-3xl">
+    <div class="flex items-center gap-3 border-b border-petroleo-900/10 px-5">
+      <Icon name="search" class="size-5 shrink-0 text-grafito/45" />
+      <label for="search-input" class="sr-only">Buscar</label>
+      <input
+        id="search-input"
+        type="search"
+        autocomplete="off"
+        spellcheck="false"
+        placeholder="Busca: polarizado, esmerilado, seguridad 8 mil…"
+        class="h-16 min-w-0 flex-1 bg-transparent text-lg text-grafito outline-none placeholder:text-grafito/40 [&::-webkit-search-cancel-button]:hidden"
+        role="combobox"
+        aria-expanded="true"
+        aria-controls="search-results"
+        aria-autocomplete="list"
+      />
+      <button type="button" class="rounded-lg border border-petroleo-900/15 px-2 py-1 text-xs font-semibold text-grafito/55 transition hover:bg-concreto" data-search-close>
+        <span class="hidden sm:inline">Esc</span><span class="sm:hidden">Cerrar</span>
+      </button>
+    </div>
+    <div class="min-h-0 flex-1 overflow-y-auto overscroll-contain p-2" data-search-scroll>
+      <ul id="search-results" role="listbox" aria-label="Resultados" class="grid gap-0.5" data-search-results></ul>
+      <p class="hidden px-4 py-10 text-center text-grafito/60" data-search-empty>
+        No encontramos resultados. <a href={whatsappUrl('Hola Maven Films, tengo una pregunta.')} target="_blank" rel="noopener" class="font-semibold text-petroleo-700 underline underline-offset-4" data-wa-source="buscador_vacio">Pregúntanos por WhatsApp</a>
+      </p>
+    </div>
+    <div class="hidden items-center gap-5 border-t border-petroleo-900/10 px-5 py-3 text-xs text-grafito/50 sm:flex">
+      <span><kbd class="kbd">↑</kbd> <kbd class="kbd">↓</kbd> navegar</span>
+      <span><kbd class="kbd">Enter</kbd> abrir</span>
+      <span><kbd class="kbd">Esc</kbd> cerrar</span>
+    </div>
+  </div>
+</dialog>
+
+<style>
+  .search-dialog::backdrop {
+    background: rgb(9 30 38 / 0.55);
+    backdrop-filter: blur(6px);
+  }
+  .search-dialog[open] .search-panel {
+    animation: search-in 0.3s var(--ease-out-expo);
+  }
+  @keyframes search-in {
+    from { opacity: 0; transform: translateY(-10px) scale(0.98); }
+  }
+  .kbd {
+    display: inline-block;
+    min-width: 1.5rem;
+    border-radius: 0.375rem;
+    border: 1px solid rgb(15 46 58 / 0.15);
+    padding: 0.05rem 0.35rem;
+    text-align: center;
+    font-family: inherit;
+  }
+</style>
+
+<script>
+  import { track } from '@/scripts/maven';
+
+  interface Item { t: string; u: string; k: string; d: string; x: string; n?: string; nt?: string }
+  const dialog = document.getElementById('search-dialog') as HTMLDialogElement;
+  const input = document.getElementById('search-input') as HTMLInputElement;
+  const list = dialog.querySelector<HTMLElement>('[data-search-results]')!;
+  const empty = dialog.querySelector<HTMLElement>('[data-search-empty]')!;
+  let items: Item[] | null = null;
+  let results: Item[] = [];
+  let active = 0;
+
+  const norm = (s: string) => s.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+  const esc = (s: string) => s.replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+  const KIND_ORDER: Record<string, number> = { Película: 0, Línea: 1, Página: 2, Guía: 3, Pregunta: 4 };
+
+  async function load(): Promise<Item[]> {
+    if (items) return items;
+    const res = await fetch('/search-index.json');
+    const raw = (await res.json()) as Item[];
+    items = raw.map((i) => ({ ...i, nt: norm(i.t), n: norm(`${i.t} ${i.d} ${i.x}`) }));
+    return items;
+  }
+
+  function search(q: string): Item[] {
+    if (!items) return [];
+    const tokens = norm(q).split(/\s+/).filter(Boolean);
+    if (!tokens.length) {
+      // Sugerencias iniciales: las líneas y las películas más buscadas.
+      const top = ['/peliculas/control-solar/polarizado-nanoceramico/', '/peliculas/seguridad/seguridad-transparente-8-mil/', '/peliculas/decorativas/frosted-esmerilado/'];
+      return [...items.filter((i) => i.k === 'Línea'), ...items.filter((i) => top.includes(i.u))];
+    }
+    const scored: { i: Item; s: number }[] = [];
+    for (const i of items) {
+      let s = 0;
+      let all = true;
+      for (const t of tokens) {
+        const inTitle = i.nt!.includes(t);
+        if (!inTitle && !i.n!.includes(t)) {
+          all = false;
+          break;
+        }
+        s += inTitle ? (i.nt!.split(/\s+/).some((w) => w.startsWith(t)) ? 14 : 10) : 2;
+      }
+      if (all) scored.push({ i, s: s - (KIND_ORDER[i.k] ?? 5) * 0.5 });
+    }
+    return scored.sort((a, b) => b.s - a.s).slice(0, 9).map((r) => r.i);
+  }
+
+  /**
+   * Resalta coincidencias sin tocar el HTML generado: se calculan rangos sobre el texto original
+   * (la versión sin tildes conserva las mismas posiciones), se fusionan y luego se escapa cada tramo.
+   */
+  function highlight(text: string, q: string): string {
+    const n = norm(text);
+    const ranges: [number, number][] = [];
+    for (const t of norm(q).split(/\s+/).filter((w) => w.length > 1)) {
+      for (let i = n.indexOf(t); i >= 0; i = n.indexOf(t, i + t.length)) ranges.push([i, i + t.length]);
+    }
+    if (!ranges.length) return esc(text);
+    ranges.sort((x, y) => x[0] - y[0]);
+    const merged: [number, number][] = [];
+    for (const r of ranges) {
+      const last = merged[merged.length - 1];
+      if (last && r[0] <= last[1]) last[1] = Math.max(last[1], r[1]);
+      else merged.push([...r]);
+    }
+    let out = '';
+    let pos = 0;
+    for (const [start, end] of merged) {
+      out += esc(text.slice(pos, start)) + '<mark class="rounded bg-ambar-100 px-0.5 text-petroleo-950">' + esc(text.slice(start, end)) + '</mark>';
+      pos = end;
+    }
+    return out + esc(text.slice(pos));
+  }
+
+  function render(): void {
+    const q = input.value;
+    results = search(q);
+    active = 0;
+    empty.classList.toggle('hidden', results.length > 0 || !q.trim());
+    list.innerHTML = results
+      .map(
+        (r, idx) => `<li role="option" id="sr-${idx}" aria-selected="${idx === 0}">
+          <a href="${esc(r.u)}" class="search-hit flex items-start gap-4 rounded-2xl px-4 py-3 transition [li[aria-selected=true]_&]:bg-concreto" data-idx="${idx}">
+            <span class="mt-0.5 shrink-0 rounded-full bg-petroleo-900/6 px-2.5 py-0.5 text-[0.7rem] font-semibold text-petroleo-700">${esc(r.k)}</span>
+            <span class="min-w-0">
+              <span class="block font-display font-semibold text-petroleo-900">${highlight(r.t, q)}</span>
+              <span class="mt-0.5 line-clamp-2 block text-sm text-grafito/65">${highlight(r.d, q)}</span>
+            </span>
+          </a></li>`,
+      )
+      .join('');
+    paint();
+  }
+
+  function paint(): void {
+    list.querySelectorAll<HTMLElement>('[role=option]').forEach((li, idx) => {
+      const sel = idx === active;
+      li.setAttribute('aria-selected', String(sel));
+      if (sel) li.scrollIntoView({ block: 'nearest' });
+    });
+    input.setAttribute('aria-activedescendant', results.length ? `sr-${active}` : '');
+  }
+
+  async function open(): Promise<void> {
+    if (dialog.open) return;
+    dialog.showModal();
+    document.documentElement.classList.add('overflow-hidden');
+    input.value = '';
+    input.focus();
+    await load();
+    render();
+    track('search_open');
+  }
+
+  input.addEventListener('input', render);
+  input.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowDown' || e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (!results.length) return;
+      active = (active + (e.key === 'ArrowDown' ? 1 : -1) + results.length) % results.length;
+      paint();
+    } else if (e.key === 'Enter' && results[active]) {
+      e.preventDefault();
+      track('search', { q: input.value, result: results[active].u });
+      location.href = results[active].u;
+    }
+  });
+  list.addEventListener('mousemove', (e) => {
+    const a = (e.target as HTMLElement).closest<HTMLElement>('[data-idx]');
+    if (a && Number(a.dataset.idx) !== active) {
+      active = Number(a.dataset.idx);
+      paint();
+    }
+  });
+  list.addEventListener('click', (e) => {
+    const a = (e.target as HTMLElement).closest<HTMLAnchorElement>('a[data-idx]');
+    if (a) track('search', { q: input.value, result: a.getAttribute('href') });
+    dialog.close();
+  });
+  dialog.querySelector('[data-search-close]')!.addEventListener('click', () => dialog.close());
+  dialog.addEventListener('click', (e) => {
+    if (e.target === dialog) dialog.close();
+  });
+  dialog.addEventListener('close', () => {
+    // Solo se libera el scroll si no queda otra ventana modal abierta (p. ej. buscador sobre el cotizador).
+    if (!document.querySelector('dialog[open]')) document.documentElement.classList.remove('overflow-hidden');
+  });
+
+  document.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('[data-search-open]')) {
+      e.preventDefault();
+      open();
+    }
+  });
+  document.addEventListener('keydown', (e) => {
+    const typing = /input|textarea|select/i.test((e.target as HTMLElement).tagName) || (e.target as HTMLElement).isContentEditable;
+    if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !typing && !dialog.open)) {
+      e.preventDefault();
+      open();
+    }
+  });
+</script>

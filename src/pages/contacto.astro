@@ -2,21 +2,30 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import Breadcrumbs from '@/components/ui/Breadcrumbs.astro';
 import Icon from '@/components/ui/Icon.astro';
-import QuoteForm from '@/components/sections/QuoteForm.astro';
+import QuoteWizard from '@/components/quote/QuoteWizard.astro';
 import FaqList from '@/components/ui/FaqList.astro';
 import { site, whatsappUrl } from '@/config/site';
 import { generalFaqs } from '@/data/solutions';
+
+// Se renderiza en el servidor para mostrar errores del envío sin JavaScript (?error=...).
+export const prerender = false;
+const errorMessages: Record<string, string> = {
+  datos: 'Revisa tu nombre, tu celular y la autorización de datos.',
+  limite: 'Recibimos varias solicitudes seguidas desde tu conexión. Espera unos minutos.',
+  servidor: 'No pudimos enviar tu solicitud en este momento.',
+};
+const serverError = errorMessages[Astro.url.searchParams.get('error') ?? ''] ?? '';
 
 const breadcrumbs = [
   { name: 'Inicio', href: '/' },
   { name: 'Contacto', href: '/contacto/' },
 ];
-const faqs = generalFaqs.filter((f) => /cotizo|visitas|garantía/i.test(f.q));
+const faqs = generalFaqs.filter((f) => /cotizo|visita|garantía/i.test(f.q));
 ---
 
 <BaseLayout
-  title="Cotiza películas para vidrio: visita técnica sin costo"
-  description="Cotiza películas para vidrio en Bogotá. Visita técnica sin costo, muestras reales y propuesta en menos de un día hábil por WhatsApp, teléfono o correo."
+  title="Cotiza películas para vidrio en Bogotá"
+  description="Cotiza películas para vidrio en Bogotá por WhatsApp, teléfono o correo. Respuesta en menos de un día hábil y visita técnica con muestras reales."
   breadcrumbs={breadcrumbs}
   schema={[{ '@type': 'ContactPage', name: 'Contacto Maven Films', url: Astro.url.href }]}
 >
@@ -36,11 +45,20 @@ const faqs = generalFaqs.filter((f) => /cotizo|visitas|garantía/i.test(f.q));
   <section class="relative -mt-28 pb-24 lg:-mt-32">
     <div class="container-page grid gap-8 lg:grid-cols-[1.35fr_0.65fr]">
       <div>
-        <QuoteForm />
+        {
+          serverError && (
+            <p class="mb-4 rounded-2xl bg-red-50 px-5 py-4 text-sm text-red-800 shadow" role="alert">
+              {serverError} Si prefieres, escríbenos por WhatsApp.
+            </p>
+          )
+        }
+        <div id="cotizar" class="scroll-mt-28">
+          <QuoteWizard mode="inline" uid="qc" />
+        </div>
       </div>
 
       <aside class="space-y-4">
-        <a href={whatsappUrl()} target="_blank" rel="noopener" class="group flex items-center gap-4 rounded-3xl bg-[#25D366] p-6 text-white shadow-[0_20px_40px_-20px_rgb(37_211_102_/_0.7)] transition hover:-translate-y-0.5">
+        <a href={whatsappUrl()} target="_blank" rel="noopener" data-wa-source="contacto_lateral" class="group flex items-center gap-4 rounded-3xl bg-[#25D366] p-6 text-white shadow-[0_20px_40px_-20px_rgb(37_211_102_/_0.7)] transition hover:-translate-y-0.5">
           <span class="grid size-12 place-items-center rounded-2xl bg-white/20"><Icon name="whatsapp" class="size-6" /></span>
           <span class="flex-1">
             <span class="block font-display text-lg font-semibold">WhatsApp</span>
@@ -86,18 +104,3 @@ const faqs = generalFaqs.filter((f) => /cotizo|visitas|garantía/i.test(f.q));
   </section>
 </BaseLayout>
 
-<script>
-  // Preselecciona la línea si se llega desde una página de producto (?linea=slug).
-  const params = new URLSearchParams(location.search);
-  const linea = params.get('linea');
-  if (linea) {
-    document.querySelector<HTMLInputElement>(`input[name="interest"][data-slug="${CSS.escape(linea)}"]`)?.click();
-  }
-  // Error devuelto por el servidor cuando el formulario se envió sin JavaScript (?error=...).
-  const serverError = params.get('error');
-  const errorEl = document.querySelector<HTMLElement>('#quote-form .form-error');
-  if (serverError && errorEl) {
-    errorEl.textContent = `${serverError.slice(0, 200)} Inténtalo de nuevo o escríbenos por WhatsApp.`;
-    errorEl.classList.remove('hidden');
-  }
-</script>
