@@ -253,7 +253,7 @@ export const products: Product[] = [
     name: 'Polarizado convencional',
     summary: 'Privacidad y menos brillo con la mejor relación costo-beneficio.',
     seoTitle: 'Polarizado convencional para ventanas: 5 % a 50 %',
-    seoDescription: 'Polarizado convencional para ventanas de casas y oficinas: privacidad, menos brillo y 99 % de bloqueo UV. Tonos 5 %, 20 %, 35 % y 50 %. Cotiza gratis.',
+    seoDescription: 'Polarizado convencional para ventanas de casas y oficinas: privacidad, menos brillo y 99 % de bloqueo UV. Tonos 5 %, 20 %, 35 % y 50 %. Cotiza hoy.',
     description: [
       'El polarizado convencional es una película de poliéster teñida que reduce la cantidad de luz que entra por el vidrio. Es la forma más directa de ganar privacidad, controlar el deslumbramiento y bloquear la radiación ultravioleta.',
       'Es la opción ideal cuando la prioridad es la privacidad o el confort visual, y el presupuesto importa. Si el problema principal es el calor intenso, te recomendaremos considerar la nanocerámica.',
@@ -325,7 +325,7 @@ export const products: Product[] = [
     name: 'Película reflectiva tipo espejo',
     summary: 'Efecto espejo plata o bronce: privacidad diurna y alto rechazo solar.',
     seoTitle: 'Película reflectiva tipo espejo para vidrio',
-    seoDescription: 'Película reflectiva tipo espejo plata o bronce: privacidad diurna, alto rechazo solar y fachada uniforme. Ideal para oficinas y edificios. Cotiza gratis.',
+    seoDescription: 'Película reflectiva tipo espejo plata o bronce: privacidad diurna, alto rechazo solar y fachada uniforme. Ideal para oficinas y edificios. Cotiza hoy.',
     description: [
       'La película reflectiva tiene una capa metalizada que refleja buena parte de la energía solar antes de que entre al espacio. Desde afuera el vidrio se ve como un espejo plateado o bronce; desde adentro se mantiene la visibilidad hacia el exterior.',
       'Es la solución clásica para fachadas comerciales y oficinas con sol directo: unifica la apariencia del edificio y da privacidad durante el día. De noche, con la luz encendida adentro, el efecto se invierte; lo explicamos en la asesoría para que tomes la mejor decisión.',
