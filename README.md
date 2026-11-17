@@ -86,7 +86,8 @@ Si configuras GA4 o el píxel de Meta en `site.ts`, el sitio envía estos evento
 
 Se inventaron datos para poder construir el sitio. **Cámbialos o confírmalos antes de salir en vivo:**
 
-- [ ] Teléfono / WhatsApp (`+57 300 000 0000`) y correo (`ventas@mavenfilms.com.co`).
+- [x] Teléfono / WhatsApp (`+57 310 316 8533`), Instagram y Facebook ya configurados.
+- [ ] Correo (`ventas@mavenfilms.com.co`).
 - [ ] Dominio (`https://www.mavenfilms.com.co`) en `SITE_URL`.
 - [ ] Dirección física, NIT, horarios y municipios de cobertura.
 - [ ] Año de fundación (2024).

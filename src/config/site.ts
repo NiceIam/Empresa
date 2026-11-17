@@ -21,9 +21,9 @@ export const site = {
 
   contact: {
     /** Número en formato internacional, solo dígitos (se usa para wa.me y tel:). */
-    whatsapp: '573000000000',
-    phone: '+573000000000',
-    phoneDisplay: '+57 300 000 0000',
+    whatsapp: '573103168533',
+    phone: '+573103168533',
+    phoneDisplay: '+57 310 316 8533',
     email: 'ventas@mavenfilms.com.co',
     whatsappGreeting: 'Hola Maven Films, quiero cotizar películas para vidrio.',
   },
@@ -53,8 +53,8 @@ export const site = {
    * Las que queden vacías no se muestran en el sitio ni en los datos de Google.
    */
   social: {
-    instagram: '',
-    facebook: '',
+    instagram: 'https://www.instagram.com/mavenfilms.sas/',
+    facebook: 'https://www.facebook.com/share/18rKdbrUKK/',
     tiktok: '',
     youtube: '',
     linkedin: '',
